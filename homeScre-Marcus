@@ -1,0 +1,183 @@
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;      //new inport
+import javafx.scene.layout.Pane;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.text.Text;
+import javafx.scene.text.Font;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
+
+
+
+public class Main extends Application {
+    Stage seto;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception{
+//        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        seto = primaryStage;
+
+        primaryStage.setTitle("HIYA!");
+        Pane root = new Pane();
+        Scene mainS = new Scene(root, 900, 600);            //defining scene
+        primaryStage.setScene(mainS);                                     //setting the scene
+        primaryStage.show();
+
+        //adding text *test*
+        Text creds = new Text();
+        creds.setText("DESIGNED BY MARCUS UY AND RYAN SETO 2019");
+        Font test = new Font("Verdana", 20);
+        creds.setY(590);
+        creds.setX(300);
+        root.getChildren().add(creds);
+
+
+
+
+        Pane root1 = new Pane();                                          //instructions scene
+        Scene instruc = new Scene(root1,900,600);
+        Text inst = new Text();
+        inst.setText("test eihfden diebfjrefn iuednreuf");
+        inst.setY(150);
+        inst.setX(300);
+        root1.getChildren().add(inst);
+
+
+        Rectangle rec = new Rectangle(400,580);             //instructions "box"
+        rec.setX(250);
+        rec.setY(10);
+        rec.setStroke(Color.BLACK);
+        rec.setFill(Color.WHITE);
+        root1.getChildren().add(rec);
+        Text insTitle = new Text();                                         //instructions title
+        insTitle.setText("INSTRUCTIONS");
+        insTitle.setFont(Font.font("verdana", 40));
+        insTitle.setY(55);
+        insTitle.setX(295);
+        root1.getChildren().add(insTitle);
+
+
+        Text pone = new Text();
+        pone.setText("P1:");
+        pone.setFont(Font.font("verdana",20));
+        pone.setX(265);
+        pone.setY(110);
+        Text ptwo = new Text();
+        ptwo.setText("P2:");
+        ptwo.setFont(Font.font("verdana",20));
+        ptwo.setX(265);
+        ptwo.setY(170);
+        root1.getChildren().addAll(pone,ptwo);
+
+        VBox textIns = new VBox(60);                                //instructions text
+        Text one = new Text();
+        one.setText("Hifehei");
+        Text two = new Text();
+        two.setText("jhdvf");
+        Text three = new Text();
+        three.setText("hrvdf");
+        Text four = new Text();
+        four.setText("nsfnvenrj");
+        textIns.getChildren().addAll(one,two,three,four);
+        textIns.setLayoutY(100);
+        textIns.setLayoutX(310);
+        root1.getChildren().add(textIns);
+
+
+
+
+
+
+        Button back = new Button("<-");                             //Back Button
+        root1.getChildren().add(back);
+        back.setPrefWidth(60);
+        back.setPrefHeight(40);
+        back.setLayoutX(50-back.getPrefWidth()/2);
+        back.setLayoutY(40-back.getPrefWidth()/2);
+        back.setOnAction(e -> seto.setScene(mainS));
+        back.setStyle("-fx-background-color: #3CAEA3");
+        back.setOnMouseEntered(e -> back.setStyle("-fx-background-color: #379F95"));          //highlighting animation
+        back.setOnMouseExited(e -> back.setStyle("-fx-background-color: #3CAEA3"));
+
+
+
+
+
+        Button start = new Button("START");                          //Start Button
+        final Label startLabel = new Label();
+        root.getChildren().add(start);
+        start.setPrefWidth(165);
+        start.setPrefHeight(40);
+        start.setLayoutX(450-start.getPrefWidth()/2);
+        start.setLayoutY(350-start.getPrefWidth()/2);
+        startLabel.setLayoutX(290);                                         //labels
+        startLabel.setLayoutY(290);
+        start.setStyle("-fx-background-color: #3CAEA3");
+        //changing colour when hovering over button
+        start.setOnMouseEntered(e -> start.setStyle("-fx-background-color: #379F95"));
+        start.setOnMouseExited(e -> start.setStyle("-fx-background-color: #3CAEA3"));
+
+
+        Button highscores = new Button("HIGH SCORES");               //High Scores Button
+        final Label highLabel = new Label();
+        root.getChildren().add(highscores);
+        highscores.setPrefWidth(165);
+        highscores.setPrefHeight(40);
+        highscores.setLayoutX(450-start.getPrefWidth()/2);
+        highscores.setLayoutY(400-start.getPrefWidth()/2);
+        highLabel.setLayoutX(290);
+        highLabel.setLayoutY(290);
+        highscores.setStyle("-fx-background-color: #EE4540");
+        highscores.setOnMouseEntered(e -> highscores.setStyle("-fx-background-color: #D93F3B"));
+        highscores.setOnMouseExited(e -> highscores.setStyle("-fx-background-color: #EE4540"));
+
+        Button instructions = new Button("INSTRUCTIONS");               //Instructions Button
+        final Label insLabel = new Label();
+        root.getChildren().add(instructions);
+        instructions.setPrefWidth(165);
+        instructions.setPrefHeight(40);
+        instructions.setLayoutX(450-start.getPrefWidth()/2);
+        instructions.setLayoutY(450-start.getPrefWidth()/2);
+        insLabel.setLayoutX(290);
+        insLabel.setLayoutY(290);
+        instructions.setStyle("-fx-background-color: #3CAEA3");
+        instructions.setOnMouseEntered(e -> instructions.setStyle("-fx-background-color: #379F95"));
+        instructions.setOnMouseExited(e -> instructions.setStyle("-fx-background-color: #3CAEA3"));
+
+
+
+
+
+
+        start.setOnAction(e -> seto.setScene(instruc));            //Event Handler using Lambda
+
+        instructions.setOnAction(e -> {                                       //Event Handler using Lambda with curly brackets
+           System.out.println("DUNWDjn");
+           System.out.println("JNDENJD");
+        });
+
+
+
+    }
+
+//    @Override
+//    public Pane(Stage test) throws Exception {
+//
+//    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+
+
