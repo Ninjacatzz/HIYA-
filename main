@@ -131,22 +131,30 @@ public class Main extends Application {
 			// Move Up (P1) Event Handler
 			if (event.getCode() == KeyCode.W) {
 				p1NewY = p1.getY() - 15;
-				p1.setY(p1NewY);
+				if(p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight()-p1.getHeight()) {
+					p1.setY(p1NewY);
+				}
 			}
 			// Move Down (P1) Event Handler
 			if (event.getCode() == KeyCode.S) {
 				p1NewY = p1.getY() + 15;
-				p1.setY(p1NewY);
+				if(p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight()-p1.getHeight()) {
+					p1.setY(p1NewY);
+				}
 			}
 			// Move Up (P2) Event Handler
 			if (event.getCode() == KeyCode.UP) {
 				p2NewY = p2.getY() - 15;
-				p2.setY(p2NewY);
+				if(p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight()-p2.getHeight()) {
+					p2.setY(p2NewY);
+				}
 			}
 			// Move Down (P2) Event Handler
 			if (event.getCode() == KeyCode.DOWN) {
 				p2NewY = p2.getY() + 15;
-				p2.setY(p2NewY);
+				if(p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight()-p2.getHeight()) {
+					p2.setY(p2NewY);
+				}
 			}
 			// Player 1 Bullet Event Handler
 			if (event.getCode() == KeyCode.D) {
