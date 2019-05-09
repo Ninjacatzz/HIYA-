@@ -1,3 +1,5 @@
+package application;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -11,33 +13,46 @@ import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
-import javafx.animation.FadeTransition;
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.animation.FillTransition;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 
-import java.awt.event.ActionListener;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class Main extends Application {
-	//Map
+	// Map
 	public static Rectangle map = new Rectangle(600, 350);
-	//P1
+	// P1
 	public static Rectangle p1 = new Rectangle(50, 50);
-	//P2
+	// P2
 	public static Rectangle p2 = new Rectangle(50, 50);
-	//Pane
+	// Pane
 	public static Pane root = new Pane();
-	//TranslateTransition Variable
+
+	// TranslateTransition Variable
 	public static TranslateTransition transition = new TranslateTransition();
-	//FillTransition Variable
-	public static FillTransition fTransition = new FillTransition();
+
+	// Animation Timer
+	public static AnimationTimer gameLoop;
+
+	// P1 Bullet Desired X
+	public static double p1DesiredX = 700;
+	// P2 Bullet Desired X
+	public static double p2DesiredX = -700;
+
+	// P1 newY
+	public static double p1NewY;
+	// P2 newY
+	public static double p2NewY;
 	
+	// P1 Bullet
+	public static Rectangle p1Bullet = new Rectangle(30, 30);
+	// P2 Bullet
+	public static Rectangle p2Bullet = new Rectangle(30, 30);
+
 	@Override
 	public void start(Stage primaryStage) {
-		//Scene
+		// Scene
 		Scene scene = new Scene(root, 900, 600);
 
 		// Application Title
@@ -52,26 +67,24 @@ public class Main extends Application {
 		int p2Center = 800;
 
 		// Map Location
-		map.setLayoutX(screenCenter - map.getWidth() / 2);
-		map.setLayoutY(mapCenter - map.getHeight() / 2);
+		map.setX(screenCenter - map.getWidth() / 2);
+		map.setY(mapCenter - map.getHeight() / 2);
 		root.getChildren().add(map);
 		map.setFill(Color.TRANSPARENT);
 		map.setStroke(Color.BLACK);
 		map.setStrokeWidth(2);
 
 		// Player 1 Start Position
-		p1.setLayoutX(p1Center - p1.getWidth() / 2);
-		p1.setLayoutY(mapCenter - p1.getHeight() / 2);
+		p1.setX(p1Center - p1.getWidth() / 2);
+		p1.setY(mapCenter - p1.getHeight() / 2);
 		root.getChildren().add(p1);
 		p1.setFill(Color.RED);
-		int p1Pos = (int) p1.getLayoutY();
 
 		// Player 2 Start Position
-		p2.setLayoutX(p2Center - p2.getWidth() / 2);
-		p2.setLayoutY(mapCenter - p2.getHeight() / 2);
+		p2.setX(p2Center - p2.getWidth() / 2);
+		p2.setY(mapCenter - p2.getHeight() / 2);
 		root.getChildren().add(p2);
 		p2.setFill(Color.BLUE);
-		int p2Pos = (int) p2.getLayoutY();
 
 		// lives
 		int p1Lives = 3;
@@ -79,106 +92,120 @@ public class Main extends Application {
 
 		// lives locations
 		Rectangle p1Lives1 = new Rectangle(30, 30);
-		p1Lives1.setLayoutX(map.getLayoutX());
-		p1Lives1.setLayoutY(map.getLayoutY() + map.getHeight() + 5);
+		p1Lives1.setX(map.getX());
+		p1Lives1.setY(map.getY() + map.getHeight() + 5);
 		root.getChildren().add(p1Lives1);
 		p1Lives1.setFill(Color.GREY);
 
 		Rectangle p1Lives2 = new Rectangle(30, 30);
-		p1Lives2.setLayoutX(p1Lives1.getLayoutX() + p1Lives2.getWidth() + 5);
-		p1Lives2.setLayoutY(map.getLayoutY() + map.getHeight() + 5);
+		p1Lives2.setX(p1Lives1.getX() + p1Lives2.getWidth() + 5);
+		p1Lives2.setY(map.getY() + map.getHeight() + 5);
 		root.getChildren().add(p1Lives2);
 		p1Lives2.setFill(Color.GREY);
 
 		Rectangle p1Lives3 = new Rectangle(30, 30);
-		p1Lives3.setLayoutX(p1Lives2.getLayoutX() + p1Lives3.getWidth() + 5);
-		p1Lives3.setLayoutY(map.getLayoutY() + map.getHeight() + 5);
+		p1Lives3.setX(p1Lives2.getX() + p1Lives3.getWidth() + 5);
+		p1Lives3.setY(map.getY() + map.getHeight() + 5);
 		root.getChildren().add(p1Lives3);
 		p1Lives3.setFill(Color.GREY);
 
 		Rectangle p2Lives1 = new Rectangle(30, 30);
-		p2Lives1.setLayoutX(map.getLayoutX() + map.getWidth() - p2Lives1.getWidth());
-		p2Lives1.setLayoutY(map.getLayoutY() + map.getHeight() + 5);
+		p2Lives1.setX(map.getX() + map.getWidth() - p2Lives1.getWidth());
+		p2Lives1.setY(map.getY() + map.getHeight() + 5);
 		root.getChildren().add(p2Lives1);
 		p2Lives1.setFill(Color.GREY);
 
 		Rectangle p2Lives2 = new Rectangle(30, 30);
-		p2Lives2.setLayoutX(p2Lives1.getLayoutX() - p2Lives2.getWidth() - 5);
-		p2Lives2.setLayoutY(map.getLayoutY() + map.getHeight() + 5);
+		p2Lives2.setX(p2Lives1.getX() - p2Lives2.getWidth() - 5);
+		p2Lives2.setY(map.getY() + map.getHeight() + 5);
 		root.getChildren().add(p2Lives2);
 		p2Lives2.setFill(Color.GREY);
 
 		Rectangle p2Lives3 = new Rectangle(30, 30);
-		p2Lives3.setLayoutX(p2Lives2.getLayoutX() - p2Lives3.getWidth() - 5);
-		p2Lives3.setLayoutY(map.getLayoutY() + map.getHeight() + 5);
+		p2Lives3.setX(p2Lives2.getX() - p2Lives3.getWidth() - 5);
+		p2Lives3.setY(map.getY() + map.getHeight() + 5);
 		root.getChildren().add(p2Lives3);
 		p2Lives3.setFill(Color.GREY);
 
-		
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {		
+		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 			// Move Up (P1) Event Handler
 			if (event.getCode() == KeyCode.W) {
-				p1.setTranslateY(-5);
+				p1NewY = p1.getY() - 15;
+				p1.setY(p1NewY);
 			}
 			// Move Down (P1) Event Handler
 			if (event.getCode() == KeyCode.S) {
-				p1.setTranslateY(5);
+				p1NewY = p1.getY() + 15;
+				p1.setY(p1NewY);
 			}
 			// Move Up (P2) Event Handler
 			if (event.getCode() == KeyCode.UP) {
-				p2.setTranslateY(-5);
+				p2NewY = p2.getY() - 15;
+				p2.setY(p2NewY);
 			}
 			// Move Down (P2) Event Handler
 			if (event.getCode() == KeyCode.DOWN) {
-				p2.setTranslateY(5);
+				p2NewY = p2.getY() + 15;
+				p2.setY(p2NewY);
 			}
 			// Player 1 Bullet Event Handler
 			if (event.getCode() == KeyCode.D) {
-				p1Bullet(p1.getLayoutY() + p1.getHeight() / 2);
+				p1Bullet();
+
 			}
 			// Player 2 Bullet Event Handler
 			if (event.getCode() == KeyCode.LEFT) {
-				p2Bullet(p2.getLayoutY() + p2.getHeight() / 2);
+				p2Bullet();
+			}
+			//Temporary Start Button
+			if(event.getCode() == KeyCode.SPACE) {
+				gameLoop.start();
+				System.out.println("Game loop has started");
+			}
+			// Temporary P2 Bullet Position Check
+			if(event.getCode() == KeyCode.G) {
+				System.out.println(p2Bullet.getX());
 			}
 		});
+
+		gameLoop = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				//P1 Collision Detection
+				System.out.println(p2Bullet.getX());
+				if(p1.getX() < p2Bullet.getX() && p2Bullet.getX() < p1.getX() + p1.getWidth()) {
+					if(p1.getY() < p2Bullet.getX() && p2Bullet.getX() < p1.getY() + p1.getHeight()) {
+						System.out.println("P1 Has been hit");
+					}
+					else if(p1.getY() < p2Bullet.getX() + p2Bullet.getHeight() && p2Bullet.getX() + p2Bullet.getHeight() < p1.getY() + p1.getHeight()) {
+						System.out.println("P1 has been hit");
+					}
+				}
+			}
+		};
+
 	}
 
-	public static void p1Bullet(double position) {
-		Rectangle p1Bullet = new Rectangle(30, 30);
-		p1Bullet.setLayoutX(map.getLayoutX());
-		p1Bullet.setLayoutY(position - p1Bullet.getHeight() / 2);
+	public static void p1Bullet() {
+		p1Bullet.setX(p1.getX() + p1.getWidth() / 2 - p1Bullet.getWidth() / 2);
+		p1Bullet.setY(p1.getY() + p1.getHeight() / 2 - p1Bullet.getHeight() / 2);
 		p1Bullet.setFill(Color.BLACK);
 		root.getChildren().add(p1Bullet);
-		
-//		while(p1Bullet.getLayoutX() < (p2.getLayoutX() + p2.getWidth()/2)) {
-//			p1Bullet.setTranslateX(1);
-//		}
-		transition.setDuration(Duration.seconds(1));
+		transition.setDuration(Duration.millis(1000));
 		transition.setNode(p1Bullet);
-		transition.setToX((p2.getLayoutX() + p2.getWidth()/2) - p1Bullet.getWidth()/2 - p1Bullet.getLayoutX());
+		transition.setToX(p1DesiredX);
 		transition.play();
-		if(p1Bullet.getLayoutX() >= (p2.getLayoutX() + p2.getWidth()/2) - p1Bullet.getWidth()/2 - p1Bullet.getLayoutX()) {
-			System.out.println(p1Bullet.getLayoutX());
-			transition.stop();
-			p1Bullet.setFill(Color.TRANSPARENT);
-			root.getChildren().remove(p1Bullet);
-		}
 	}
-	
-	public static void p2Bullet(double position) {
-		Rectangle p2Bullet = new Rectangle(30, 30);
-		p2Bullet.setLayoutX(map.getLayoutX()+map.getWidth());
-		p2Bullet.setLayoutY(position - p2Bullet.getHeight() / 2);
+
+	public static void p2Bullet() {
+		p2Bullet.setX(p2.getX() + p2.getWidth() / 2 - p2Bullet.getWidth() / 2);
+		p2Bullet.setY(p2.getY() + p2.getHeight() / 2 - p2Bullet.getHeight() / 2);
 		p2Bullet.setFill(Color.BLACK);
 		root.getChildren().add(p2Bullet);
-		
-		transition.setDuration(Duration.seconds(1));
+		transition.setDuration(Duration.millis(1000));
 		transition.setNode(p2Bullet);
-		transition.setToX((p1.getLayoutX() + p1.getWidth()/2) - p2Bullet.getWidth()/2 - p2Bullet.getLayoutX());
+		transition.setToX(p2DesiredX);
 		transition.play();
-		if(p2Bullet.getLayoutX() == (p1.getLayoutX() + p1.getWidth()/2) - p2Bullet.getWidth()/2 - p2Bullet.getLayoutX()) {
-			root.getChildren().remove(p2Bullet);
-		}
 	}
 
 	public static void main(String[] args) {
