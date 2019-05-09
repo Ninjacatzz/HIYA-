@@ -44,14 +44,29 @@ public class Main extends Application {
 	public static double p1NewY;
 	// P2 newY
 	public static double p2NewY;
+
+	public static Rectangle[] p1Bullet = new Rectangle[999]; 
 	
-	// P1 Bullet
-	public static Rectangle p1Bullet = new Rectangle(30, 30);
-	// P2 Bullet
-	public static Rectangle p2Bullet = new Rectangle(30, 30);
+	public static Rectangle[] p2Bullet = new Rectangle[999];
+	
+	public static int p1BulletCounter = 0;
+	public static int p2BulletCounter = 0;
+	
+	// lives
+	public static int p1Lives = 3;
+	public static int p2Lives = 3;
 
 	@Override
 	public void start(Stage primaryStage) {
+		// P1 Bullet Initialization
+		for(int i = 0; i < p1Bullet.length; i++) {
+			p1Bullet[i] = new Rectangle(30,30);
+		}
+		// P2 Bullet Initialization
+		for(int j = 0; j < p1Bullet.length; j++) {
+			p2Bullet[j] = new Rectangle(30,30);
+		}
+		
 		// Scene
 		Scene scene = new Scene(root, 900, 600);
 
@@ -86,9 +101,7 @@ public class Main extends Application {
 		root.getChildren().add(p2);
 		p2.setFill(Color.BLUE);
 
-		// lives
-		int p1Lives = 3;
-		int p2Lives = 3;
+		
 
 		// lives locations
 		Rectangle p1Lives1 = new Rectangle(30, 30);
@@ -158,21 +171,17 @@ public class Main extends Application {
 			}
 			// Player 1 Bullet Event Handler
 			if (event.getCode() == KeyCode.D) {
-				p1Bullet();
+				p1Bullet(p1BulletCounter);
 
 			}
 			// Player 2 Bullet Event Handler
 			if (event.getCode() == KeyCode.LEFT) {
-				p2Bullet();
+				p2Bullet(p2BulletCounter);
 			}
-			//Temporary Start Button
+			// Temporary Start Button
 			if(event.getCode() == KeyCode.SPACE) {
 				gameLoop.start();
 				System.out.println("Game loop has started");
-			}
-			// Temporary P2 Bullet Position Check
-			if(event.getCode() == KeyCode.G) {
-				System.out.println(p2Bullet.getX());
 			}
 		});
 
@@ -180,40 +189,88 @@ public class Main extends Application {
 			@Override
 			public void handle(long now) {
 				//P1 Collision Detection
-				System.out.println(p2Bullet.getX());
-				if(p1.getX() < p2Bullet.getX() && p2Bullet.getX() < p1.getX() + p1.getWidth()) {
-					if(p1.getY() < p2Bullet.getX() && p2Bullet.getX() < p1.getY() + p1.getHeight()) {
-						System.out.println("P1 Has been hit");
-					}
-					else if(p1.getY() < p2Bullet.getX() + p2Bullet.getHeight() && p2Bullet.getX() + p2Bullet.getHeight() < p1.getY() + p1.getHeight()) {
-						System.out.println("P1 has been hit");
-					}
+				if(p1.getBoundsInParent().intersects(p2Bullet[p2BulletCounter].getBoundsInParent())) {
+					root.getChildren().remove(p2Bullet[p2BulletCounter]);
+					p2BulletCounter++;
+					p1Lives--;
 				}
+				//P2 Collision Detection
+				if(p2.getBoundsInParent().intersects(p1Bullet[p1BulletCounter].getBoundsInParent())) {
+					root.getChildren().remove(p1Bullet[p1BulletCounter]);
+					p1BulletCounter++;
+					p2Lives--;
+				}
+				
+				//P1 Bullet Disappear Check
+				if(p1Bullet[p1BulletCounter].getTranslateX() == p1DesiredX) {
+					root.getChildren().remove(p1Bullet[p1BulletCounter]);
+					p1BulletCounter++;
+				}
+				
+				//P2 Bullet Disappear Check
+				if(p2Bullet[p2BulletCounter].getTranslateX() == p2DesiredX) {
+					root.getChildren().remove(p2Bullet[p2BulletCounter]);
+					p2BulletCounter++;
+				}
+				
+				//P1 Lives Check 
+				if(p1Lives == 2) {
+					root.getChildren().remove(p1Lives3);
+				}
+				else if(p1Lives == 1) {
+					root.getChildren().remove(p1Lives2);
+				}
+				else if(p1Lives == 0 ) {
+					root.getChildren().remove(p1Lives1);
+				}
+				
+				//P2 Lives Check
+				if(p2Lives == 2) {
+					root.getChildren().remove(p2Lives3);
+				}
+				else if(p2Lives == 1) {
+					root.getChildren().remove(p2Lives2);
+				}
+				else if(p2Lives == 0 ) {
+					root.getChildren().remove(p2Lives1);
+				}
+				
+				// Original Collision Detection
+//				if(p1.getX() < (p2Bullet.getX() + p2Bullet.getTranslateX()) && (p2Bullet.getX() + p2Bullet.getTranslateX()) < p1.getX() + p1.getWidth()) {
+//					if(p1.getY() < (p2Bullet.getY() + p2Bullet.getTranslateY()) && (p2Bullet.getY() + p2Bullet.getTranslateY()) < p1.getY() + p1.getHeight()) {
+//					
+//					}
+//					else if(p1.getY() < (p2Bullet.getY() + p2Bullet.getTranslateY()) + p2Bullet.getHeight() && (p2Bullet.getY() + p2Bullet.getTranslateY()) + p2Bullet.getHeight() < p1.getY() + p1.getHeight()) {
+//						
+//					}
+//				}
+				
 			}
 		};
 
 	}
 
-	public static void p1Bullet() {
-		p1Bullet.setX(p1.getX() + p1.getWidth() / 2 - p1Bullet.getWidth() / 2);
-		p1Bullet.setY(p1.getY() + p1.getHeight() / 2 - p1Bullet.getHeight() / 2);
-		p1Bullet.setFill(Color.BLACK);
-		root.getChildren().add(p1Bullet);
+	public static void p1Bullet(int num) {
+		p1Bullet[num].setX(p1.getX() + p1.getWidth() / 2 - p1Bullet[num].getWidth() / 2);
+		p1Bullet[num].setY(p1.getY() + p1.getHeight() / 2 - p1Bullet[num].getHeight() / 2);
+		p1Bullet[num].setFill(Color.BLACK);
+		root.getChildren().add(p1Bullet[num]);
 		transition.setDuration(Duration.millis(1000));
-		transition.setNode(p1Bullet);
+		transition.setNode(p1Bullet[num]);
 		transition.setToX(p1DesiredX);
 		transition.play();
 	}
 
-	public static void p2Bullet() {
-		p2Bullet.setX(p2.getX() + p2.getWidth() / 2 - p2Bullet.getWidth() / 2);
-		p2Bullet.setY(p2.getY() + p2.getHeight() / 2 - p2Bullet.getHeight() / 2);
-		p2Bullet.setFill(Color.BLACK);
-		root.getChildren().add(p2Bullet);
+	public static void p2Bullet(int num) {
+		p2Bullet[num].setX(p2.getX() + p2.getWidth() / 2 - p2Bullet[num].getWidth() / 2);
+		p2Bullet[num].setY(p2.getY() + p2.getHeight() / 2 - p2Bullet[num].getHeight() / 2);
+		p2Bullet[num].setFill(Color.BLACK);
+		root.getChildren().add(p2Bullet[num]);
 		transition.setDuration(Duration.millis(1000));
-		transition.setNode(p2Bullet);
+		transition.setNode(p2Bullet[num]);
 		transition.setToX(p2DesiredX);
 		transition.play();
+		p1BulletCounter++;
 	}
 
 	public static void main(String[] args) {
