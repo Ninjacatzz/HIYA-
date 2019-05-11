@@ -12,7 +12,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.animation.AnimationTimer;
 import javafx.animation.TranslateTransition;
+import javafx.animation.FillTransition;
+import javafx.animation.Timeline;
 import javafx.util.Duration;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Main extends Application {
 	// Map
@@ -74,6 +79,14 @@ public class Main extends Application {
 	// Recharge Filling Line Counter
 	public static int p1AmmoLineCounter = 0;
 	public static int p2AmmoLineCounter = 0;
+
+	// Pause Boolaen
+	public static boolean pause = false;
+		
+	// Pause Bars
+	public static Rectangle pauseBar1 = new Rectangle(50, 200, Color.GREY);
+	public static Rectangle pauseBar2 = new Rectangle(50, 200, Color.GREY);
+
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -192,12 +205,12 @@ public class Main extends Application {
 		p2Recharge.setStroke(Color.BLACK);
 		p2Recharge.setStrokeWidth(1);
 		root.getChildren().add(p2Recharge);
-
+		
 		// Event Handler
 		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 			// Move Up (P1) Event Handler
 			if (event.getCode() == KeyCode.W) {
-				if (p1Lives != 0 && p2Lives != 0) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p1NewY = p1.getY() - 15;
 					if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
 						p1.setY(p1NewY);
@@ -206,7 +219,7 @@ public class Main extends Application {
 			}
 			// Move Down (P1) Event Handler
 			if (event.getCode() == KeyCode.S) {
-				if (p1Lives != 0 && p2Lives != 0) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p1NewY = p1.getY() + 15;
 					if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
 						p1.setY(p1NewY);
@@ -215,7 +228,7 @@ public class Main extends Application {
 			}
 			// Move Up (P2) Event Handler
 			if (event.getCode() == KeyCode.UP) {
-				if (p1Lives != 0 && p2Lives != 0) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p2NewY = p2.getY() - 15;
 					if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
 						p2.setY(p2NewY);
@@ -224,7 +237,7 @@ public class Main extends Application {
 			}
 			// Move Down (P2) Event Handler
 			if (event.getCode() == KeyCode.DOWN) {
-				if (p1Lives != 0 && p2Lives != 0) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p2NewY = p2.getY() + 15;
 					if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
 						p2.setY(p2NewY);
@@ -233,7 +246,7 @@ public class Main extends Application {
 			}
 			// Player 1 Bullet Event Handler
 			if (event.getCode() == KeyCode.D) {
-				if (p1Lives != 0 && p2Lives != 0) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p1Bullet(p1BulletCounter);
 					if (p1Ammo == false) {
 						p1BulletRecharge();
@@ -243,7 +256,7 @@ public class Main extends Application {
 			}
 			// Player 2 Bullet Event Handler
 			if (event.getCode() == KeyCode.LEFT) {
-				if (p1Lives != 0 && p2Lives != 0) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p2Bullet(p2BulletCounter);
 					if (p2Ammo == false) {
 						p2BulletRecharge();
@@ -251,6 +264,33 @@ public class Main extends Application {
 					}
 				}
 			}
+			// Pause Button
+			if (event.getCode() == KeyCode.P) {
+				if (pause == false) {
+					gameLoop.stop();
+					pause = true;
+					p1BulletTransition.pause();
+					p2BulletTransition.pause();
+					p1RechargeTransition.pause();
+					p2RechargeTransition.pause();
+					pauseBar1.setX(350);
+					pauseBar1.setY(300 - pauseBar1.getHeight()/2);
+					pauseBar2.setX(500);
+					pauseBar2.setY(300 - pauseBar1.getHeight()/2);
+					root.getChildren().add(pauseBar1);
+					root.getChildren().add(pauseBar2);
+				} else if (pause == true) {
+					gameLoop.start();	
+					p1BulletTransition.play();
+					p2BulletTransition.play();
+					p1RechargeTransition.play();
+					p2RechargeTransition.play();
+					pause = false;
+					root.getChildren().remove(pauseBar1);
+					root.getChildren().remove(pauseBar2);
+				}
+			}
+
 			// Temporary Start Button
 			if (event.getCode() == KeyCode.SPACE) {
 				gameLoop.start();
@@ -258,9 +298,10 @@ public class Main extends Application {
 			}
 			// Test Print Button
 			if (event.getCode() == KeyCode.G) {
-
+				System.out.println(screenCenter);
 			}
 		});
+
 
 		// Animation Timer/Game Loop
 		gameLoop = new AnimationTimer() {
@@ -289,6 +330,14 @@ public class Main extends Application {
 					root.getChildren().remove(p2Bullet[p2BulletCounter]);
 					p2BulletCounter++;
 				}
+				
+				// Bullet Collision (With Each Other)
+//				if (p1Bullet[p1BulletCounter].getBoundsInParent().intersects(p2Bullet[p2BulletCounter].getBoundsInParent())) {
+//					root.getChildren().remove(p1Bullet[p1BulletCounter]);
+//					p1BulletCounter++;
+//					root.getChildren().remove(p2Bullet[p2BulletCounter]);
+//					p2BulletCounter++;
+//				}
 
 				// P1 Lives Check
 				if (p1Lives == 2) {
@@ -333,13 +382,14 @@ public class Main extends Application {
 					p2AmmoLineCounter++;
 					p2Ammo = true;
 				}
-
+				
 				// Game Over
 				if (p1Lives == 0) {
 					gameLoop.stop();
 				} else if (p2Lives == 0) {
 					gameLoop.stop();
 				}
+				
 			}
 		};
 
