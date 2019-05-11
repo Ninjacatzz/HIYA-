@@ -82,11 +82,10 @@ public class Main extends Application {
 
 	// Pause Boolaen
 	public static boolean pause = false;
-		
+
 	// Pause Bars
 	public static Rectangle pauseBar1 = new Rectangle(50, 200, Color.GREY);
 	public static Rectangle pauseBar2 = new Rectangle(50, 200, Color.GREY);
-
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -205,7 +204,7 @@ public class Main extends Application {
 		p2Recharge.setStroke(Color.BLACK);
 		p2Recharge.setStrokeWidth(1);
 		root.getChildren().add(p2Recharge);
-		
+
 		// Event Handler
 		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 			// Move Up (P1) Event Handler
@@ -274,13 +273,13 @@ public class Main extends Application {
 					p1RechargeTransition.pause();
 					p2RechargeTransition.pause();
 					pauseBar1.setX(350);
-					pauseBar1.setY(300 - pauseBar1.getHeight()/2);
+					pauseBar1.setY(300 - pauseBar1.getHeight() / 2);
 					pauseBar2.setX(500);
-					pauseBar2.setY(300 - pauseBar1.getHeight()/2);
+					pauseBar2.setY(300 - pauseBar1.getHeight() / 2);
 					root.getChildren().add(pauseBar1);
 					root.getChildren().add(pauseBar2);
 				} else if (pause == true) {
-					gameLoop.start();	
+					gameLoop.start();
 					p1BulletTransition.play();
 					p2BulletTransition.play();
 					p1RechargeTransition.play();
@@ -301,7 +300,6 @@ public class Main extends Application {
 				System.out.println(screenCenter);
 			}
 		});
-
 
 		// Animation Timer/Game Loop
 		gameLoop = new AnimationTimer() {
@@ -330,14 +328,35 @@ public class Main extends Application {
 					root.getChildren().remove(p2Bullet[p2BulletCounter]);
 					p2BulletCounter++;
 				}
-				
+
 				// Bullet Collision (With Each Other)
-//				if (p1Bullet[p1BulletCounter].getBoundsInParent().intersects(p2Bullet[p2BulletCounter].getBoundsInParent())) {
-//					root.getChildren().remove(p1Bullet[p1BulletCounter]);
-//					p1BulletCounter++;
-//					root.getChildren().remove(p2Bullet[p2BulletCounter]);
-//					p2BulletCounter++;
+
+//				if (p1Bullet[p1BulletCounter].getTranslateX()
+//						+ p1Bullet[p1BulletCounter].getWidth() >= p2Bullet[p2BulletCounter].getX()
+//								+ p2Bullet[p2BulletCounter].getTranslateX()) {
+//					if (p1Bullet[p1BulletCounter].getY() <= p2Bullet[p2BulletCounter].getY()
+//							+ p2Bullet[p2BulletCounter].getHeight()) {
+//						root.getChildren().remove(p1Bullet[p1BulletCounter]);
+//						p1BulletCounter++;
+//						root.getChildren().remove(p2Bullet[p2BulletCounter]);
+//						p2BulletCounter++;
+//					} else if (p2Bullet[p1BulletCounter].getY() <= p1Bullet[p2BulletCounter].getY()
+//							+ p1Bullet[p2BulletCounter].getHeight()) {
+//						root.getChildren().remove(p1Bullet[p1BulletCounter]);
+//						p1BulletCounter++;
+//						root.getChildren().remove(p2Bullet[p2BulletCounter]);
+//						p2BulletCounter++;
+//					}
 //				}
+
+				if (p1Bullet[p1BulletCounter].getBoundsInParent()
+						.intersects(p2Bullet[p2BulletCounter].getBoundsInParent())
+						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
+					root.getChildren().remove(p1Bullet[p1BulletCounter]);
+					p1BulletCounter++;
+					root.getChildren().remove(p2Bullet[p2BulletCounter]);
+					p2BulletCounter++;
+				}
 
 				// P1 Lives Check
 				if (p1Lives == 2) {
@@ -382,14 +401,14 @@ public class Main extends Application {
 					p2AmmoLineCounter++;
 					p2Ammo = true;
 				}
-				
+
 				// Game Over
 				if (p1Lives == 0) {
 					gameLoop.stop();
 				} else if (p2Lives == 0) {
 					gameLoop.stop();
 				}
-				
+
 			}
 		};
 
@@ -419,7 +438,6 @@ public class Main extends Application {
 			p2BulletTransition.setNode(p2Bullet[num]);
 			p2BulletTransition.setToX(p2DesiredX);
 			p2BulletTransition.play();
-			p1BulletCounter++;
 		}
 		p2Ammo = false;
 	}
