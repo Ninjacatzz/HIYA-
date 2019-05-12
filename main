@@ -12,12 +12,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.animation.AnimationTimer;
 import javafx.animation.TranslateTransition;
-import javafx.animation.FillTransition;
-import javafx.animation.Timeline;
 import javafx.util.Duration;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Main extends Application {
 	// Map
@@ -57,6 +52,8 @@ public class Main extends Application {
 	// Lives
 	public static int p1Lives = 3;
 	public static int p2Lives = 3;
+	public static Rectangle[] p1LivesArr = new Rectangle[3];
+	public static Rectangle[] p2LivesArr = new Rectangle[3];
 
 	// Recharge Bars
 	public static Rectangle p1Recharge = new Rectangle(100, 30);
@@ -86,6 +83,8 @@ public class Main extends Application {
 	// Pause Bars
 	public static Rectangle pauseBar1 = new Rectangle(50, 200, Color.GREY);
 	public static Rectangle pauseBar2 = new Rectangle(50, 200, Color.GREY);
+	
+	// Bonus Lives
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -116,6 +115,11 @@ public class Main extends Application {
 		// P2 Ammo Fill Line Initialization
 		for (int i = 0; i < p1AmmoLine.length; i++) {
 			p2AmmoLine[i] = new Line(750, 465, 750, 495);
+		}
+
+		// P1 Lives Array Initialization
+		for (int i = 0; i < p1LivesArr.length; i++) {
+			p1LivesArr[i] = new Rectangle(30,30, Color.GREY);
 		}
 
 		// Scene
@@ -153,53 +157,41 @@ public class Main extends Application {
 		p2.setFill(Color.BLUE);
 
 		// lives locations
-		Rectangle p1Lives1 = new Rectangle(30, 30);
-		p1Lives1.setX(map.getX());
-		p1Lives1.setY(map.getY() + map.getHeight() + 5);
-		root.getChildren().add(p1Lives1);
-		p1Lives1.setFill(Color.GREY);
+		p1LivesArr[0].setX(map.getX());
+		p1LivesArr[0].setY(map.getY() + map.getHeight() + 5);
+		root.getChildren().add(p1LivesArr[0]);
 
-		Rectangle p1Lives2 = new Rectangle(30, 30);
-		p1Lives2.setX(p1Lives1.getX() + p1Lives2.getWidth() + 5);
-		p1Lives2.setY(map.getY() + map.getHeight() + 5);
-		root.getChildren().add(p1Lives2);
-		p1Lives2.setFill(Color.GREY);
+		p1LivesArr[1].setX(p1LivesArr[0].getX() + p1LivesArr[1].getWidth() + 5);
+		p1LivesArr[1].setY(map.getY() + map.getHeight() + 5);
+		root.getChildren().add(p1LivesArr[1]);
 
-		Rectangle p1Lives3 = new Rectangle(30, 30);
-		p1Lives3.setX(p1Lives2.getX() + p1Lives3.getWidth() + 5);
-		p1Lives3.setY(map.getY() + map.getHeight() + 5);
-		root.getChildren().add(p1Lives3);
-		p1Lives3.setFill(Color.GREY);
+		p1LivesArr[2].setX(p1LivesArr[1].getX() + p1LivesArr[2].getWidth() + 5);
+		p1LivesArr[2].setY(map.getY() + map.getHeight() + 5);
+		root.getChildren().add(p1LivesArr[2]);
 
-		Rectangle p2Lives1 = new Rectangle(30, 30);
-		p2Lives1.setX(map.getX() + map.getWidth() - p2Lives1.getWidth());
-		p2Lives1.setY(map.getY() + map.getHeight() + 5);
-		root.getChildren().add(p2Lives1);
-		p2Lives1.setFill(Color.GREY);
+		p2LivesArr[0].setX(map.getX() + map.getWidth() - p2LivesArr[0].getWidth());
+		p2LivesArr[0].setY(map.getY() + map.getHeight() + 5);
+		root.getChildren().add(p2LivesArr[0]);
 
-		Rectangle p2Lives2 = new Rectangle(30, 30);
-		p2Lives2.setX(p2Lives1.getX() - p2Lives2.getWidth() - 5);
-		p2Lives2.setY(map.getY() + map.getHeight() + 5);
-		root.getChildren().add(p2Lives2);
-		p2Lives2.setFill(Color.GREY);
+		p2LivesArr[1].setX(p2LivesArr[0].getX() - p2LivesArr[1].getWidth() - 5);
+		p2LivesArr[1].setY(map.getY() + map.getHeight() + 5);
+		root.getChildren().add(p2LivesArr[1]);
 
-		Rectangle p2Lives3 = new Rectangle(30, 30);
-		p2Lives3.setX(p2Lives2.getX() - p2Lives3.getWidth() - 5);
-		p2Lives3.setY(map.getY() + map.getHeight() + 5);
-		root.getChildren().add(p2Lives3);
-		p2Lives3.setFill(Color.GREY);
+		p2LivesArr[2].setX(p2LivesArr[1].getX() - p2LivesArr[2].getWidth() - 5);
+		p2LivesArr[2].setY(map.getY() + map.getHeight() + 5);
+		root.getChildren().add(p2LivesArr[2]);
 
 		// P1 Recharge Bar
 		p1Recharge.setX(map.getX());
-		p1Recharge.setY(p1Lives1.getY() + p1Lives1.getHeight() + 5);
+		p1Recharge.setY(p1LivesArr[0].getY() + p1LivesArr[0].getHeight() + 5);
 		p1Recharge.setFill(Color.TRANSPARENT);
 		p1Recharge.setStroke(Color.BLACK);
 		p1Recharge.setStrokeWidth(1);
 		root.getChildren().add(p1Recharge);
 
 		// P2 Recharge Bar
-		p2Recharge.setX(p2Lives3.getX());
-		p2Recharge.setY(p2Lives3.getY() + p2Lives3.getHeight() + 5);
+		p2Recharge.setX(p2LivesArr[2].getX());
+		p2Recharge.setY(p2LivesArr[2].getY() + p2LivesArr[2].getHeight() + 5);
 		p2Recharge.setFill(Color.TRANSPARENT);
 		p2Recharge.setStroke(Color.BLACK);
 		p2Recharge.setStrokeWidth(1);
@@ -330,25 +322,6 @@ public class Main extends Application {
 				}
 
 				// Bullet Collision (With Each Other)
-
-//				if (p1Bullet[p1BulletCounter].getTranslateX()
-//						+ p1Bullet[p1BulletCounter].getWidth() >= p2Bullet[p2BulletCounter].getX()
-//								+ p2Bullet[p2BulletCounter].getTranslateX()) {
-//					if (p1Bullet[p1BulletCounter].getY() <= p2Bullet[p2BulletCounter].getY()
-//							+ p2Bullet[p2BulletCounter].getHeight()) {
-//						root.getChildren().remove(p1Bullet[p1BulletCounter]);
-//						p1BulletCounter++;
-//						root.getChildren().remove(p2Bullet[p2BulletCounter]);
-//						p2BulletCounter++;
-//					} else if (p2Bullet[p1BulletCounter].getY() <= p1Bullet[p2BulletCounter].getY()
-//							+ p1Bullet[p2BulletCounter].getHeight()) {
-//						root.getChildren().remove(p1Bullet[p1BulletCounter]);
-//						p1BulletCounter++;
-//						root.getChildren().remove(p2Bullet[p2BulletCounter]);
-//						p2BulletCounter++;
-//					}
-//				}
-
 				if (p1Bullet[p1BulletCounter].getBoundsInParent()
 						.intersects(p2Bullet[p2BulletCounter].getBoundsInParent())
 						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
@@ -360,20 +333,20 @@ public class Main extends Application {
 
 				// P1 Lives Check
 				if (p1Lives == 2) {
-					root.getChildren().remove(p1Lives3);
+					root.getChildren().remove(p1LivesArr[p1Lives]);
 				} else if (p1Lives == 1) {
-					root.getChildren().remove(p1Lives2);
+					root.getChildren().remove(p1LivesArr[p1Lives]);
 				} else if (p1Lives == 0) {
-					root.getChildren().remove(p1Lives1);
+					root.getChildren().remove(p1LivesArr[p1Lives]);
 				}
 
 				// P2 Lives Check
 				if (p2Lives == 2) {
-					root.getChildren().remove(p2Lives3);
+					root.getChildren().remove(p2LivesArr[p2Lives]);
 				} else if (p2Lives == 1) {
-					root.getChildren().remove(p2Lives2);
+					root.getChildren().remove(p2LivesArr[p2Lives]);
 				} else if (p2Lives == 0) {
-					root.getChildren().remove(p2Lives1);
+					root.getChildren().remove(p2LivesArr[p2Lives]);
 				}
 
 				// P1 Recharge Animation
@@ -408,7 +381,6 @@ public class Main extends Application {
 				} else if (p2Lives == 0) {
 					gameLoop.stop();
 				}
-
 			}
 		};
 
