@@ -248,6 +248,10 @@ public class Main extends Application {
 			gameLoop.start();
 			timer[clockCounter] = new clock();
 			rootGame.getChildren().add(timer[clockCounter]);
+			p1NameInput = p1TF.getCharacters().toString();
+			p1Name.setText(p1NameInput);
+			p2NameInput = p2TF.getCharacters().toString();
+			p2Name.setText(p2NameInput);
 		});
 
 		// Title
