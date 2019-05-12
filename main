@@ -51,6 +51,9 @@ public class Main extends Application {
 	public static TextField p1TF = new TextField();
 	public static TextField p2TF = new TextField();
 
+	public static String p1NameInput = new String();
+	public static String p2NameInput = new String();
+
 	// Bullet TranslateTransition
 	public static TranslateTransition p1BulletTransition = new TranslateTransition();
 	public static TranslateTransition p2BulletTransition = new TranslateTransition();
@@ -109,6 +112,9 @@ public class Main extends Application {
 	public static Rectangle pauseBar1 = new Rectangle(50, 200, Color.GREY);
 	public static Rectangle pauseBar2 = new Rectangle(50, 200, Color.GREY);
 
+	// Game Over Button
+	public static Button gameOver = new Button("GAME OVER!");
+
 	// Timer loop
 	public class clock extends Pane {
 		Timeline animation;
@@ -154,7 +160,6 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-
 		primaryStage.setTitle("HIYA!");
 		// Main Scene and Root
 		rootTitle = new Pane();
@@ -166,35 +171,68 @@ public class Main extends Application {
 		rootGame = new Pane();
 		sceneGame = new Scene(rootGame, 900, 600);
 
-		// Player Name Scene and Root
-		rootPlayerName = new Pane();
-		scenePlayerName = new Scene(rootPlayerName, 900, 600);
-		Rectangle p1Model = new Rectangle(50, 50, Color.RED);
-		Rectangle p2Model = new Rectangle(50, 50, Color.BLUE);
-		p1TF.setPrefColumnCount(10);
-		p1TF.setLayoutX(225);
-		p1TF.setLayoutX(325);
-		p2TF.setPrefColumnCount(10);
-		p2TF.setLayoutX(675);
-		p2TF.setLayoutX(325);
-
 		// Start Button
-		Button startButton = new Button("START"); // Start Button
+		Button startButton = new Button("START");
 		final Label startLabel = new Label();
-		rootTitle.getChildren().add(startButton);
 		startButton.setPrefWidth(165);
 		startButton.setPrefHeight(40);
 		startButton.setLayoutX(450 - startButton.getPrefWidth() / 2);
 		startButton.setLayoutY(350 - startButton.getPrefWidth() / 2);
-		startLabel.setLayoutX(290); // labels
+		startLabel.setLayoutX(290);
 		startLabel.setLayoutY(290);
 		startButton.setStyle("-fx-background-color: #3CAEA3");
+		rootTitle.getChildren().add(startButton);
 		// changing color when hovering over button
 		startButton.setOnMouseEntered(event -> startButton.setStyle("-fx-background-color: #379F95"));
 		startButton.setOnMouseExited(event -> startButton.setStyle("-fx-background-color: #3CAEA3"));
 		// Start Button Event Handler
 		startButton.setOnAction(event -> {
 			primaryStage.setScene(scenePlayerName);
+		});
+
+		// Player Name Scene and Root
+		rootPlayerName = new Pane();
+		scenePlayerName = new Scene(rootPlayerName, 900, 600);
+		Rectangle p1Model = new Rectangle(50, 50, Color.RED);
+		p1Model.setX(225 - p1Model.getWidth() / 2);
+		p1Model.setY(300 - p1Model.getHeight() / 2);
+		rootPlayerName.getChildren().add(p1Model);
+		Label p1Label = new Label("P1");
+		p1Label.setLayoutX(p1Model.getX() + 18);
+		p1Label.setLayoutY(p1Model.getY() + 18);
+		rootPlayerName.getChildren().add(p1Label);
+		Rectangle p2Model = new Rectangle(50, 50, Color.BLUE);
+		p2Model.setX(675 - p2Model.getWidth() / 2);
+		p2Model.setY(300 - p2Model.getHeight() / 2);
+		rootPlayerName.getChildren().add(p2Model);
+		Label p2Label = new Label("P2");
+		p2Label.setLayoutX(p2Model.getX() + 18);
+		p2Label.setLayoutY(p2Model.getY() + 18);
+		rootPlayerName.getChildren().add(p2Label);
+		p1TF.setPrefColumnCount(10);
+		p1TF.setLayoutX(p1Model.getX() - 35);
+		p1TF.setLayoutY(p1Model.getY() + 65);
+		rootPlayerName.getChildren().add(p1TF);
+		p1TF.setOnAction(event -> {
+			p1NameInput = p1TF.getCharacters().toString();
+			p1Name.setText(p1NameInput);
+		});
+		p2TF.setPrefColumnCount(10);
+		p2TF.setLayoutX(p2Model.getX() - 35);
+		p2TF.setLayoutY(p2Model.getY() + 65);
+		rootPlayerName.getChildren().add(p2TF);
+		p2TF.setOnAction(event -> {
+			p2NameInput = p2TF.getCharacters().toString();
+			p2Name.setText(p2NameInput);
+		});
+		Button startGameButton = new Button("BEGIN");
+		startGameButton.setPrefWidth(165);
+		startGameButton.setPrefHeight(40);
+		startGameButton.setLayoutX(450 - startGameButton.getPrefWidth() / 2);
+		startGameButton.setLayoutY(400 - startGameButton.getPrefHeight() / 2);
+		rootPlayerName.getChildren().add(startGameButton);
+		startGameButton.setOnAction(event -> {
+			primaryStage.setScene(sceneGame);
 			gameLoop.start();
 			clock timer = new clock();
 			rootGame.getChildren().add(timer);
@@ -393,6 +431,34 @@ public class Main extends Application {
 		rootGame.getChildren().add(p1);
 		p1.setFill(Color.RED);
 
+		// Player 1 Name Position
+		p1Name.setPrefWidth(98);
+		p1Name.setPrefHeight(30);
+		p1Name.setLayoutX(map.getX() - 7 - p1Name.getPrefWidth());
+		p1Name.setLayoutY(map.getY() + map.getHeight() + 5);
+		rootGame.getChildren().add(p1Name);
+		Rectangle p1NameBorder = new Rectangle(p1Name.getPrefWidth(), p1Name.getPrefHeight());
+		p1NameBorder.setX(p1Name.getLayoutX() - 2);
+		p1NameBorder.setY(p1Name.getLayoutY());
+		p1NameBorder.setFill(Color.TRANSPARENT);
+		p1NameBorder.setStroke(Color.BLACK);
+		p1NameBorder.setStrokeWidth(2);
+		rootGame.getChildren().add(p1NameBorder);
+
+		// Player 2 Name Position
+		p2Name.setPrefWidth(98);
+		p2Name.setPrefHeight(30);
+		p2Name.setLayoutX(map.getX() + map.getWidth() + 7);
+		p2Name.setLayoutY(map.getY() + map.getHeight() + 5);
+		rootGame.getChildren().add(p2Name);
+		Rectangle p2NameBorder = new Rectangle(p2Name.getPrefWidth(), p2Name.getPrefHeight());
+		p2NameBorder.setX(p2Name.getLayoutX() - 2);
+		p2NameBorder.setY(p2Name.getLayoutY());
+		p2NameBorder.setFill(Color.TRANSPARENT);
+		p2NameBorder.setStroke(Color.BLACK);
+		p2NameBorder.setStrokeWidth(2);
+		rootGame.getChildren().add(p2NameBorder);
+
 		// Player 2 Start Position
 		p2.setX(p2Center - p2.getWidth() / 2);
 		p2.setY(mapCenter - p2.getHeight() / 2);
@@ -536,6 +602,7 @@ public class Main extends Application {
 					rootGame.getChildren().remove(pauseBar1);
 					rootGame.getChildren().remove(pauseBar2);
 				}
+				
 			}
 		});
 
@@ -628,6 +695,12 @@ public class Main extends Application {
 					p2BulletTransition.pause();
 					p1RechargeTransition.pause();
 					p2RechargeTransition.pause();
+					gameOver.setPrefWidth(400);
+					gameOver.setPrefHeight(100);
+					gameOver.setLayoutX(450 - gameOver.getPrefWidth() / 2);
+					gameOver.setLayoutY(200 - gameOver.getPrefHeight() / 2);
+					rootGame.getChildren().add(gameOver);
+					gameOver.setOnAction(event -> primaryStage.setScene(mainScene));
 				}
 			}
 		};
