@@ -115,9 +115,12 @@ public class Main extends Application {
 	// Game Over Button
 	public static Button gameOver = new Button("GAME OVER!");
 
+	public static Timeline animation;
+	public static int clockCounter = 0;
+	public static clock[] timer = new clock[999];
+
 	// Timer loop
 	public class clock extends Pane {
-		Timeline animation;
 		int secondsPass = 0;
 		String S = " ";
 		String tempSecs = "";
@@ -234,8 +237,8 @@ public class Main extends Application {
 		startGameButton.setOnAction(event -> {
 			primaryStage.setScene(sceneGame);
 			gameLoop.start();
-			clock timer = new clock();
-			rootGame.getChildren().add(timer);
+			timer[clockCounter] = new clock();
+			rootGame.getChildren().add(timer[clockCounter]);
 		});
 
 		// Creator Text
@@ -469,38 +472,38 @@ public class Main extends Application {
 		Rectangle p1Lives1 = new Rectangle(30, 30);
 		p1Lives1.setX(map.getX());
 		p1Lives1.setY(map.getY() + map.getHeight() + 5);
-		rootGame.getChildren().add(p1Lives1);
 		p1Lives1.setFill(Color.GREY);
+		rootGame.getChildren().add(p1Lives1);
 
 		Rectangle p1Lives2 = new Rectangle(30, 30);
 		p1Lives2.setX(p1Lives1.getX() + p1Lives2.getWidth() + 5);
 		p1Lives2.setY(map.getY() + map.getHeight() + 5);
-		rootGame.getChildren().add(p1Lives2);
 		p1Lives2.setFill(Color.GREY);
+		rootGame.getChildren().add(p1Lives2);
 
 		Rectangle p1Lives3 = new Rectangle(30, 30);
 		p1Lives3.setX(p1Lives2.getX() + p1Lives3.getWidth() + 5);
 		p1Lives3.setY(map.getY() + map.getHeight() + 5);
-		rootGame.getChildren().add(p1Lives3);
 		p1Lives3.setFill(Color.GREY);
+		rootGame.getChildren().add(p1Lives3);
 
 		Rectangle p2Lives1 = new Rectangle(30, 30);
 		p2Lives1.setX(map.getX() + map.getWidth() - p2Lives1.getWidth());
 		p2Lives1.setY(map.getY() + map.getHeight() + 5);
-		rootGame.getChildren().add(p2Lives1);
 		p2Lives1.setFill(Color.GREY);
+		rootGame.getChildren().add(p2Lives1);
 
 		Rectangle p2Lives2 = new Rectangle(30, 30);
 		p2Lives2.setX(p2Lives1.getX() - p2Lives2.getWidth() - 5);
 		p2Lives2.setY(map.getY() + map.getHeight() + 5);
-		rootGame.getChildren().add(p2Lives2);
 		p2Lives2.setFill(Color.GREY);
+		rootGame.getChildren().add(p2Lives2);
 
 		Rectangle p2Lives3 = new Rectangle(30, 30);
 		p2Lives3.setX(p2Lives2.getX() - p2Lives3.getWidth() - 5);
 		p2Lives3.setY(map.getY() + map.getHeight() + 5);
-		rootGame.getChildren().add(p2Lives3);
 		p2Lives3.setFill(Color.GREY);
+		rootGame.getChildren().add(p2Lives3);
 
 		// P1 Recharge Bar
 		p1Recharge.setX(map.getX());
@@ -591,7 +594,7 @@ public class Main extends Application {
 					pauseBar2.setY(300 - pauseBar1.getHeight() / 2);
 					rootGame.getChildren().add(pauseBar1);
 					rootGame.getChildren().add(pauseBar2);
-
+					animation.pause();
 				} else if (pause == true) {
 					gameLoop.start();
 					p1BulletTransition.play();
@@ -601,8 +604,9 @@ public class Main extends Application {
 					pause = false;
 					rootGame.getChildren().remove(pauseBar1);
 					rootGame.getChildren().remove(pauseBar2);
+					animation.play();
 				}
-				
+
 			}
 		});
 
@@ -651,6 +655,7 @@ public class Main extends Application {
 					rootGame.getChildren().remove(p1Lives2);
 				} else if (p1Lives == 0) {
 					rootGame.getChildren().remove(p1Lives1);
+
 				}
 
 				// P2 Lives Check
@@ -695,12 +700,61 @@ public class Main extends Application {
 					p2BulletTransition.pause();
 					p1RechargeTransition.pause();
 					p2RechargeTransition.pause();
+					animation.stop();
 					gameOver.setPrefWidth(400);
 					gameOver.setPrefHeight(100);
 					gameOver.setLayoutX(450 - gameOver.getPrefWidth() / 2);
-					gameOver.setLayoutY(200 - gameOver.getPrefHeight() / 2);
+					gameOver.setLayoutY(mapCenter - gameOver.getPrefHeight() / 2);
 					rootGame.getChildren().add(gameOver);
-					gameOver.setOnAction(event -> primaryStage.setScene(mainScene));
+					gameOver.setOnAction(event -> {
+						rootGame.getChildren().remove(gameOver);
+						rootGame.getChildren().remove(timer[clockCounter]);
+						clockCounter++;
+						primaryStage.setScene(mainScene);
+
+						p1BulletTransition.stop();
+						rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+						p2BulletTransition.stop();
+						rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+						p1RechargeTransition.stop();
+						rootGame.getChildren().remove(p1AmmoFill[p1AmmoFillCounter]);
+						p2RechargeTransition.stop();
+						rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
+						p1BulletCounter = 0;
+						p2BulletCounter = 0;
+						p1AmmoFillCounter = 0;
+						p2AmmoFillCounter = 0;
+						p1AmmoLineCounter = 0;
+						p2AmmoLineCounter = 0;
+						p1Ammo = true;
+						p2Ammo = true;
+						if (p1Lives == 0) {
+							rootGame.getChildren().add(p1Lives1);
+							rootGame.getChildren().add(p1Lives2);
+							rootGame.getChildren().add(p1Lives3);
+							p1Lives = 3;
+						} else if (p1Lives == 1) {
+							rootGame.getChildren().add(p1Lives2);
+
+						} else if (p1Lives == 2) {
+							rootGame.getChildren().add(p1Lives3);
+							p1Lives = 3;
+						}
+						if (p2Lives == 0) {
+
+							rootGame.getChildren().add(p2Lives1);
+							rootGame.getChildren().add(p2Lives2);
+							rootGame.getChildren().add(p2Lives3);
+							p2Lives = 3;
+						} else if (p2Lives == 1) {
+							rootGame.getChildren().add(p2Lives2);
+							rootGame.getChildren().add(p2Lives3);
+							p2Lives = 3;
+						} else if (p2Lives == 2) {
+							rootGame.getChildren().add(p2Lives3);
+							p2Lives = 3;
+						}
+					});
 				}
 			}
 		};
