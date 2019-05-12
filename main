@@ -371,8 +371,7 @@ public class Main extends Application {
 		// Other Instructions Text
 		VBox otherTextInstructions = new VBox(20);
 		Text pauseInstructions = new Text("Press P to pause.");
-		Text nameInstructions = new Text("Make sure to press ENTER when typing your name.");
-		otherTextInstructions.getChildren().addAll(pauseInstructions, nameInstructions);
+		otherTextInstructions.getChildren().addAll(pauseInstructions);
 		otherTextInstructions.setLayoutY(370);
 		otherTextInstructions.setLayoutX(310);
 		rootI.getChildren().add(otherTextInstructions);
