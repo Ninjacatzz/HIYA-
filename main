@@ -61,6 +61,12 @@ public class Main extends Application {
 	public static TranslateTransition p1RechargeTransition = new TranslateTransition();
 	public static TranslateTransition p2RechargeTransition = new TranslateTransition();
 
+	// Player Move Boolean
+	public static boolean p1MoveUp = false;
+	public static boolean p1MoveDown = false;
+	public static boolean p2MoveUp = false;
+	public static boolean p2MoveDown = false;
+
 	// Animation Timer
 	public static AnimationTimer gameLoop;
 
@@ -114,7 +120,7 @@ public class Main extends Application {
 
 	// Game Over Button
 	public static Button gameOver = new Button("GAME OVER!");
-	
+
 	// Winner
 	public static String winner = new String("");
 
@@ -556,42 +562,58 @@ public class Main extends Application {
 		p2Recharge.setStrokeWidth(1);
 		rootGame.getChildren().add(p2Recharge);
 
-		// Event Handler
-		sceneGame.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+		// Event Handler Key Released
+		sceneGame.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
 			// Move Up (P1) Event Handler
 			if (event.getCode() == KeyCode.W) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
-					p1NewY = p1.getY() - 15;
-					if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
-						p1.setY(p1NewY);
-					}
+					p1MoveUp = false;
 				}
 			}
 			// Move Down (P1) Event Handler
 			if (event.getCode() == KeyCode.S) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
-					p1NewY = p1.getY() + 15;
-					if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
-						p1.setY(p1NewY);
-					}
+					p1MoveDown = false;
 				}
 			}
 			// Move Up (P2) Event Handler
 			if (event.getCode() == KeyCode.UP) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
-					p2NewY = p2.getY() - 15;
-					if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
-						p2.setY(p2NewY);
-					}
+					p2MoveUp = false;
 				}
 			}
 			// Move Down (P2) Event Handler
 			if (event.getCode() == KeyCode.DOWN) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
-					p2NewY = p2.getY() + 15;
-					if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
-						p2.setY(p2NewY);
-					}
+					p2MoveDown = false;
+				}
+			}
+		});
+
+		// Event Handler
+		sceneGame.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+			// Move Up (P1) Event Handler
+			if (event.getCode() == KeyCode.W) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p1MoveUp = true;
+				}
+			}
+			// Move Down (P1) Event Handler
+			if (event.getCode() == KeyCode.S) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p1MoveDown = true;
+				}
+			}
+			// Move Up (P2) Event Handler
+			if (event.getCode() == KeyCode.UP) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p2MoveUp = true;
+				}
+			}
+			// Move Down (P2) Event Handler
+			if (event.getCode() == KeyCode.DOWN) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p2MoveDown = true;
 				}
 			}
 			// Player 1 Bullet Event Handler
@@ -736,6 +758,35 @@ public class Main extends Application {
 					p2Ammo = true;
 				}
 
+				// P1 Move Up
+				p1NewY = p1.getY() - 8;
+				if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
+					if (p1MoveUp) {
+						p1.setY(p1NewY);
+					}
+				}
+				// P1 Move Down
+				p1NewY = p1.getY() + 8;
+				if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
+					if (p1MoveDown) {
+						p1.setY(p1NewY);
+					}
+				}
+				// P2 Move Up
+				p2NewY = p2.getY() - 8;
+				if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
+					if (p2MoveUp) {
+						p2.setY(p2NewY);
+					}
+				}
+				// P2 Move Down
+				p2NewY = p2.getY() + 8;
+				if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
+					if (p2MoveDown) {
+						p2.setY(p2NewY);
+					}
+				}
+
 				// Game Over
 				if (p1Lives == 0 || p2Lives == 0) {
 					gameLoop.stop();
@@ -749,10 +800,9 @@ public class Main extends Application {
 					gameOver.setLayoutX(450 - gameOver.getPrefWidth() / 2);
 					gameOver.setLayoutY(mapCenter - gameOver.getPrefHeight() / 2);
 					rootGame.getChildren().add(gameOver);
-					if(p1Lives == 0) {
+					if (p1Lives == 0) {
 						winner = p2NameInput;
-					}
-					else if(p2Lives == 0) {
+					} else if (p2Lives == 0) {
 						winner = p1NameInput;
 					}
 					System.out.println("Game Over! " + winner + " won!");
@@ -821,7 +871,7 @@ public class Main extends Application {
 			p1Bullet[num].setStroke(Color.BLACK);
 			p1Bullet[num].setStrokeWidth(1);
 			rootGame.getChildren().add(p1Bullet[num]);
-			p1BulletTransition.setDuration(Duration.millis(1000));
+			p1BulletTransition.setDuration(Duration.millis(500));
 			p1BulletTransition.setNode(p1Bullet[num]);
 			p1BulletTransition.setToX(p1DesiredX);
 			p1BulletTransition.play();
@@ -838,7 +888,7 @@ public class Main extends Application {
 			p2Bullet[num].setStroke(Color.BLACK);
 			p2Bullet[num].setStrokeWidth(1);
 			rootGame.getChildren().add(p2Bullet[num]);
-			p2BulletTransition.setDuration(Duration.millis(1000));
+			p2BulletTransition.setDuration(Duration.millis(500));
 			p2BulletTransition.setNode(p2Bullet[num]);
 			p2BulletTransition.setToX(p2DesiredX);
 			p2BulletTransition.play();
@@ -852,7 +902,7 @@ public class Main extends Application {
 		p1AmmoFill[p1AmmoFillCounter].setY(p1Recharge.getY());
 		p1AmmoFill[p1AmmoFillCounter].setFill(Color.CRIMSON);
 		p1AmmoLine[p1AmmoLineCounter].setTranslateX(0);
-		p1RechargeTransition.setDuration(Duration.millis(1500));
+		p1RechargeTransition.setDuration(Duration.millis(2000));
 		p1RechargeTransition.setNode(p1AmmoLine[p1AmmoLineCounter]);
 		p1RechargeTransition.setToX(p1Recharge.getWidth());
 		p1RechargeTransition.play();
@@ -866,7 +916,7 @@ public class Main extends Application {
 		p2AmmoFill[p2AmmoFillCounter].setY(p2Recharge.getY());
 		p2AmmoFill[p2AmmoFillCounter].setFill(Color.ROYALBLUE);
 		p2AmmoLine[p2AmmoLineCounter].setTranslateX(0);
-		p2RechargeTransition.setDuration(Duration.millis(1500));
+		p2RechargeTransition.setDuration(Duration.millis(2000));
 		p2RechargeTransition.setNode(p2AmmoLine[p2AmmoLineCounter]);
 		p2RechargeTransition.setToX(-p2Recharge.getWidth());
 		p2RechargeTransition.play();
