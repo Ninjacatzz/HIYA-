@@ -111,18 +111,35 @@ public class Main extends Application {
 	public static int p1AmmoLineCounter = 0;
 	public static int p2AmmoLineCounter = 0;
 
-	// Pause Boolaen
+	// Pause Boolean
 	public static boolean pause = false;
 
 	// Pause Bars
 	public static Rectangle pauseBar1 = new Rectangle(50, 200, Color.GREY);
 	public static Rectangle pauseBar2 = new Rectangle(50, 200, Color.GREY);
 
+	// Pause Menu
+	public static Text pauseText = new Text("PAUSE");
+	public static Button pauseContinue = new Button("Continue?");
+	public static Button pauseExit = new Button("Exit");
+
 	// Game Over Button
 	public static Button gameOver = new Button("GAME OVER!");
 
 	// Winner
 	public static String winner = new String("");
+
+	// Power Ups
+	public static Rectangle[] livePowerUp = new Rectangle[999];
+	public static int livePowerUpCounter = 0;
+	public static Rectangle[] shieldPowerUp = new Rectangle[999];
+	public static int shieldPowerUpCounter = 0;
+	public static Rectangle[] shield = new Rectangle[999];
+	public static int shieldCounter = 0;
+	public static int shieldOwner = -1;
+	public static Rectangle[] ammoPowerUp = new Rectangle[999];
+	public static int ammoPowerUpCounter = 0;
+	public static int powerUpRandomizer = 0;
 
 	// Timer Variables
 	public static Timeline animation;
@@ -142,7 +159,7 @@ public class Main extends Application {
 
 		private clock() {
 			time.setFont(Font.font(50));
-			time.setTranslateX(395);
+			time.setTranslateX(393);
 			time.setTranslateY(15);
 			getChildren().add(time);
 			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timelabel()));
@@ -259,6 +276,19 @@ public class Main extends Application {
 			p2NameInput = p2TF.getCharacters().toString();
 			p2Name.setText(p2NameInput);
 		});
+		// Back Button (Player Name to Title Page)
+		Button backButtonPN = new Button("<-");
+		rootPlayerName.getChildren().add(backButtonPN);
+		backButtonPN.setPrefWidth(60);
+		backButtonPN.setPrefHeight(40);
+		backButtonPN.setLayoutX(50 - backButtonPN.getPrefWidth() / 2);
+		backButtonPN.setLayoutY(40 - backButtonPN.getPrefWidth() / 2);
+		// Back Button (High Score to Title Page) Event Handler
+		backButtonPN.setOnAction(event -> primaryStage.setScene(mainScene));
+		// Button Dimming
+		backButtonPN.setStyle("-fx-background-color: #3CAEA3");
+		backButtonPN.setOnMouseEntered(event -> backButtonPN.setStyle("-fx-background-color: #379F95"));
+		backButtonPN.setOnMouseExited(event -> backButtonPN.setStyle("-fx-background-color: #3CAEA3"));
 
 		// Title
 		Text title = new Text("HIYA!");
@@ -439,6 +469,18 @@ public class Main extends Application {
 			p2AmmoLine[i] = new Line(750, 465, 750, 495);
 		}
 
+		// Power Up Initializations
+		for (int i = 0; i < livePowerUp.length; i++) {
+			livePowerUp[i] = new Rectangle(30, 30, Color.GOLD);
+			shieldPowerUp[i] = new Rectangle(30, 30, Color.LIGHTBLUE);
+			ammoPowerUp[i] = new Rectangle(30, 30, Color.ORANGE);
+		}
+
+		// Shield Initialization
+		for (int i = 0; i < shield.length; i++) {
+			shield[i] = new Rectangle(10, 60, Color.GREY);
+		}
+
 		// Key Numbers
 		int mapCenter = 250;
 		int screenCenter = (int) sceneGame.getWidth() / 2;
@@ -464,7 +506,7 @@ public class Main extends Application {
 		// Player 1 Name Position
 		p1Name.setPrefWidth(98);
 		p1Name.setPrefHeight(30);
-		p1Name.setLayoutX(map.getX() - 7 - p1Name.getPrefWidth());
+		p1Name.setLayoutX(map.getX() - p1Name.getPrefWidth() - 3);
 		p1Name.setLayoutY(map.getY() + map.getHeight() + 5);
 		rootGame.getChildren().add(p1Name);
 		Rectangle p1NameBorder = new Rectangle(p1Name.getPrefWidth(), p1Name.getPrefHeight());
@@ -472,7 +514,7 @@ public class Main extends Application {
 		p1NameBorder.setY(p1Name.getLayoutY());
 		p1NameBorder.setFill(Color.TRANSPARENT);
 		p1NameBorder.setStroke(Color.BLACK);
-		p1NameBorder.setStrokeWidth(2);
+		p1NameBorder.setStrokeWidth(1);
 		rootGame.getChildren().add(p1NameBorder);
 
 		// Player 2 Start Position
@@ -494,7 +536,7 @@ public class Main extends Application {
 		p2NameBorder.setY(p2Name.getLayoutY());
 		p2NameBorder.setFill(Color.TRANSPARENT);
 		p2NameBorder.setStroke(Color.BLACK);
-		p2NameBorder.setStrokeWidth(2);
+		p2NameBorder.setStrokeWidth(1);
 		rootGame.getChildren().add(p2NameBorder);
 
 		// lives locations
@@ -653,12 +695,21 @@ public class Main extends Application {
 					p2BulletTransition.pause();
 					p1RechargeTransition.pause();
 					p2RechargeTransition.pause();
-					pauseBar1.setX(350);
-					pauseBar1.setY(300 - pauseBar1.getHeight() / 2);
-					pauseBar2.setX(500);
-					pauseBar2.setY(300 - pauseBar1.getHeight() / 2);
-					rootGame.getChildren().add(pauseBar1);
-					rootGame.getChildren().add(pauseBar2);
+
+					pauseText.setFont(Font.font("impact", 80));
+					pauseText.setX(350);
+					pauseText.setY(200);
+					rootGame.getChildren().add(pauseText);
+					pauseContinue.setPrefWidth(125);
+					pauseContinue.setPrefHeight(75);
+					pauseContinue.setLayoutX(300 - pauseContinue.getPrefWidth() / 2);
+					pauseContinue.setLayoutY(325 - pauseContinue.getPrefWidth() / 2);
+					rootGame.getChildren().add(pauseContinue);
+					pauseExit.setPrefWidth(125);
+					pauseExit.setPrefHeight(75);
+					pauseExit.setLayoutX(600 - pauseExit.getPrefWidth() / 2);
+					pauseExit.setLayoutY(325 - pauseExit.getPrefWidth() / 2);
+					rootGame.getChildren().add(pauseExit);
 					animation.pause();
 				} else if (pause == true) {
 					gameLoop.start();
@@ -667,12 +718,88 @@ public class Main extends Application {
 					p1RechargeTransition.play();
 					p2RechargeTransition.play();
 					pause = false;
-					rootGame.getChildren().remove(pauseBar1);
-					rootGame.getChildren().remove(pauseBar2);
+					rootGame.getChildren().remove(pauseText);
+					rootGame.getChildren().remove(pauseContinue);
+					rootGame.getChildren().remove(pauseExit);
 					animation.play();
 				}
-
 			}
+		});
+
+		// Pause Continue Button Event Handler
+		pauseContinue.setOnAction(event -> {
+			gameLoop.start();
+			p1BulletTransition.play();
+			p2BulletTransition.play();
+			p1RechargeTransition.play();
+			p2RechargeTransition.play();
+			pause = false;
+			rootGame.getChildren().remove(pauseText);
+			rootGame.getChildren().remove(pauseContinue);
+			rootGame.getChildren().remove(pauseExit);
+			animation.play();
+		});
+
+		// Pause Exit Button Event Handler
+		pauseExit.setOnAction(event -> {
+			rootGame.getChildren().remove(pauseText);
+			rootGame.getChildren().remove(pauseContinue);
+			rootGame.getChildren().remove(pauseExit);
+			primaryStage.setScene(mainScene);
+			rootGame.getChildren().remove(gameOver);
+			rootGame.getChildren().remove(timer[clockCounter]);
+			clockCounter++;
+			p1.setY(mapCenter);
+			p2.setY(mapCenter);
+			p1MoveUp = false;
+			p1MoveDown = false;
+			p2MoveUp = false;
+			p2MoveDown = false;
+
+			p1BulletTransition.stop();
+			rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+			p1BulletCounter++;
+			p2BulletTransition.stop();
+			rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+			p2BulletCounter++;
+			p1RechargeTransition.stop();
+			rootGame.getChildren().remove(p1AmmoFill[p1AmmoFillCounter]);
+			p1AmmoFillCounter++;
+			p2RechargeTransition.stop();
+			rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
+			p2AmmoFillCounter++;
+
+			p1AmmoFill[p1AmmoFillCounter].setX(p1Recharge.getX());
+			p2AmmoFill[p2AmmoFillCounter].setX(p2Recharge.getX() + p2Recharge.getWidth());
+			p1Ammo = true;
+			p2Ammo = true;
+			if (p1Lives == 0) {
+				rootGame.getChildren().add(p1Lives1);
+				rootGame.getChildren().add(p1Lives2);
+				rootGame.getChildren().add(p1Lives3);
+				p1Lives = 3;
+			} else if (p1Lives == 1) {
+				rootGame.getChildren().add(p1Lives2);
+
+			} else if (p1Lives == 2) {
+				rootGame.getChildren().add(p1Lives3);
+				p1Lives = 3;
+			}
+			if (p2Lives == 0) {
+				rootGame.getChildren().add(p2Lives1);
+				rootGame.getChildren().add(p2Lives2);
+				rootGame.getChildren().add(p2Lives3);
+				p2Lives = 3;
+			} else if (p2Lives == 1) {
+				rootGame.getChildren().add(p2Lives2);
+				rootGame.getChildren().add(p2Lives3);
+				p2Lives = 3;
+			} else if (p2Lives == 2) {
+				rootGame.getChildren().add(p2Lives3);
+				p2Lives = 3;
+			}
+			pause = false;
+			primaryStage.setScene(mainScene);
 		});
 
 		// Animation Timer/Game Loop
@@ -787,6 +914,117 @@ public class Main extends Application {
 					}
 				}
 
+				// Power Up Randomizer
+//				if (winningTime % 5 == 0 && winningTime != 0) {
+//					int counter = 0;
+//					int passedTime = 0;
+//					if (counter == 0) {
+//						powerUpRandomizer = (int) (Math.random() * 3);
+//						System.out.println(powerUpRandomizer);
+//						counter++;
+//						passedTime = winningTime;
+//						if (powerUpRandomizer == 0) {
+//							livePowerUp[livePowerUpCounter].setX(450 - livePowerUp[livePowerUpCounter].getWidth() / 2);
+//							if (Math.random() * map.getHeight() + map.getY() < map.getHeight() + map.getY()) {
+//								livePowerUp[livePowerUpCounter].setY(Math.random() * map.getHeight() + map.getY());
+//							}
+//							rootGame.getChildren().add(livePowerUp[livePowerUpCounter]);
+//						}
+//						if (powerUpRandomizer == 1) {
+//							shieldPowerUp[shieldPowerUpCounter]
+//									.setX(450 - shieldPowerUp[shieldPowerUpCounter].getWidth() / 2);
+//							if (Math.random() * map.getHeight() + map.getY() < map.getHeight() + map.getY()) {
+//								shieldPowerUp[shieldPowerUpCounter].setY(Math.random() * map.getHeight() + map.getY());
+//							}
+//							rootGame.getChildren().add(shieldPowerUp[shieldPowerUpCounter]);
+//						}
+//						if (powerUpRandomizer == 2) {
+//							ammoPowerUp[ammoPowerUpCounter].setX(450 - ammoPowerUp[ammoPowerUpCounter].getWidth() / 2);
+//							if (Math.random() * map.getHeight() + map.getY() < map.getHeight() + map.getY()) {
+//								ammoPowerUp[ammoPowerUpCounter].setY(Math.random() * map.getHeight() + map.getY());
+//							}
+//							rootGame.getChildren().add(ammoPowerUp[ammoPowerUpCounter]);
+//						}
+//					}
+//					if (passedTime + 1 == winningTime) {
+//						counter--;
+//					}
+//				}
+//				
+				// Live Power Up Collision Detection
+//				if (p1Bullet[p1BulletCounter].getBoundsInParent()
+//						.intersects(livePowerUp[livePowerUpCounter].getBoundsInParent())
+//						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
+//					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+//					p1BulletCounter++;
+//					rootGame.getChildren().remove(livePowerUp[livePowerUpCounter]);
+//					livePowerUpCounter++;
+//					if(p1Lives + 1 <= 3) {
+//						p1Lives++;
+//					}	
+//				}
+//				if (p2Bullet[p2BulletCounter].getBoundsInParent()
+//						.intersects(livePowerUp[livePowerUpCounter].getBoundsInParent())
+//						&& p2Bullet[p2BulletCounter].getTranslateX() != 0.0) {
+//					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+//					p2BulletCounter++;
+//					rootGame.getChildren().remove(livePowerUp[livePowerUpCounter]);
+//					livePowerUpCounter++;
+//					if(p2Lives + 1 <= 3) {
+//						p2Lives++;
+//					}
+//				}
+//				
+//				// Shield Power Up Collision Detection
+//				if (p1Bullet[p1BulletCounter].getBoundsInParent()
+//						.intersects(shieldPowerUp[shieldPowerUpCounter].getBoundsInParent())
+//						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
+//					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+//					p1BulletCounter++;
+//					rootGame.getChildren().remove(shieldPowerUp[shieldPowerUpCounter]);
+//					shieldPowerUpCounter++;
+//					shieldOwner = 1;	
+//				}
+//				if (p2Bullet[p2BulletCounter].getBoundsInParent()
+//						.intersects(shieldPowerUp[shieldPowerUpCounter].getBoundsInParent())
+//						&& p2Bullet[p2BulletCounter].getTranslateX() != 0.0) {
+//					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+//					p2BulletCounter++;
+//					rootGame.getChildren().remove(shieldPowerUp[shieldPowerUpCounter]);
+//					shieldPowerUpCounter++;
+//					shieldOwner = 2;
+//				}
+//				
+//				// Shield Logic
+//				if(shieldOwner == 1) {
+//					shield[shieldCounter].setX(p1.getX() + p1.getWidth() + 15);
+//					shield[shieldCounter].setY(p1.getY() + p1.getHeight()/2 - shield[shieldCounter].getHeight()/2);
+//					rootGame.getChildren().add(shield[shieldCounter]);
+//					if (p2Bullet[p2BulletCounter].getBoundsInParent()
+//							.intersects(shield[shieldCounter].getBoundsInParent())
+//							&& p2Bullet[p2BulletCounter].getTranslateX() != 0.0) {
+//						rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+//						p2BulletCounter++;
+//						rootGame.getChildren().remove(shield[shieldCounter]);
+//						shieldCounter++;
+//						shieldOwner = -1;
+//					}
+//				}
+//				else if(shieldOwner == 2) {
+//					shield[shieldCounter].setX(p2.getX() + shield[shieldCounter].getWidth() + 15);
+//					shield[shieldCounter].setY(p2.getY() + p2.getHeight()/2 - shield[shieldCounter].getHeight()/2);
+//					rootGame.getChildren().add(shield[shieldCounter]);
+//					if (p1Bullet[p1BulletCounter].getBoundsInParent()
+//							.intersects(shield[shieldCounter].getBoundsInParent())
+//							&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
+//						rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+//						p1BulletCounter++;
+//						rootGame.getChildren().remove(shield[shieldCounter]);
+//						shieldCounter++;
+//						shieldOwner = 0;
+//					}
+//				}
+
 				// Game Over
 				if (p1Lives == 0 || p2Lives == 0) {
 					gameLoop.stop();
@@ -811,6 +1049,12 @@ public class Main extends Application {
 						rootGame.getChildren().remove(gameOver);
 						rootGame.getChildren().remove(timer[clockCounter]);
 						clockCounter++;
+						p1.setY(mapCenter);
+						p2.setY(mapCenter);
+						p1MoveUp = false;
+						p1MoveDown = false;
+						p2MoveUp = false;
+						p2MoveDown = false;
 
 						p1BulletTransition.stop();
 						rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
