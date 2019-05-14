@@ -1,0 +1,1204 @@
+package application;
+
+import javafx.animation.*;
+import javafx.application.Application;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.shape.*;
+import javafx.scene.text.Text;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCode;
+import javafx.util.Duration;
+
+public class Main extends Application {
+	// Map
+	public static Rectangle map = new Rectangle(600, 350);
+	// P1
+	public static Rectangle p1 = new Rectangle(50, 50);
+	// P2
+	public static Rectangle p2 = new Rectangle(50, 50);
+
+	// Title Pane and Scene
+	public static Pane rootTitle;
+	public static Scene mainScene;
+
+	// High Score Pane and Scene
+	public static Pane rootHS;
+	public static Scene sceneHS;
+
+	// Instructions Pane and Scene
+	public static Pane rootI;
+	public static Scene sceneI;
+
+	// Game Pane and Scene
+	public static Pane rootGame;
+	public static Scene sceneGame;
+
+	// Player Name Pane and Scene
+	public static Pane rootPlayerName;
+	public static Scene scenePlayerName;
+	// Player Labels
+	public static Label p1Name = new Label("");
+	public static Label p2Name = new Label("");
+	// Player Name Text Fields
+	public static TextField p1TF = new TextField();
+	public static TextField p2TF = new TextField();
+	// Player Name Inputs
+	public static String p1NameInput = new String();
+	public static String p2NameInput = new String();
+
+	// Player Move Boolean
+	public static boolean p1MoveUp = false;
+	public static boolean p1MoveDown = false;
+	public static boolean p2MoveUp = false;
+	public static boolean p2MoveDown = false;
+
+	// Player Movement Coordinates
+	public static double p1NewY;
+	public static double p2NewY;
+
+	// Lives
+	public static int p1Lives = 3;
+	public static int p2Lives = 3;
+
+	// Animation Timer
+	public static AnimationTimer gameLoop;
+
+	// Bullet TranslateTransition
+	public static TranslateTransition p1BulletTransition = new TranslateTransition();
+	public static TranslateTransition p2BulletTransition = new TranslateTransition();
+	// Bullet Recharge Line TranslateTransition
+	public static TranslateTransition p1RechargeTransition = new TranslateTransition();
+	public static TranslateTransition p2RechargeTransition = new TranslateTransition();
+	// Shield Recharge Line TranslateTransition
+	public static TranslateTransition p1ShieldRechargeTransition = new TranslateTransition();
+	public static TranslateTransition p2ShieldRechargeTransition = new TranslateTransition();
+
+	// Bullet Desired X
+	public static double p1DesiredX = 700;
+	public static double p2DesiredX = -700;
+
+	// Bullet Arrays
+	public static Rectangle[] p1Bullet = new Rectangle[999];
+	public static Rectangle[] p2Bullet = new Rectangle[999];
+	// Bullet Array Counters
+	public static int p1BulletCounter = 0;
+	public static int p2BulletCounter = 0;
+
+	// Bullet Recharge Bars
+	public static Rectangle p1BulletRecharge = new Rectangle(100, 30, Color.TRANSPARENT);
+	public static Rectangle p2BulletRecharge = new Rectangle(100, 30, Color.TRANSPARENT);
+
+	// Bullet Recharge Booleans
+	public static boolean p1Ammo = true;
+	public static boolean p2Ammo = true;
+
+	// Bullet Recharge Fillings
+	public static Rectangle[] p1AmmoFill = new Rectangle[999];
+	public static Rectangle[] p2AmmoFill = new Rectangle[999];
+	// Bullet Recharge Fillings Counters
+	public static int p1AmmoFillCounter = 0;
+	public static int p2AmmoFillCounter = 0;
+
+	// Bullet Recharge Filling Line
+	public static Line[] p1AmmoLine = new Line[999];
+	public static Line[] p2AmmoLine = new Line[999];
+	// Bullet Recharge Filling Line Counter
+	public static int p1AmmoLineCounter = 0;
+	public static int p2AmmoLineCounter = 0;
+
+	// Shield Arrays
+	public static Rectangle[] p1Shield = new Rectangle[999];
+	public static Rectangle[] p2Shield = new Rectangle[999];
+	// Shield Array Counters
+	public static int p1ShieldCounter = 0;
+	public static int p2ShieldCounter = 0;
+
+	// Shield Recharge Bars
+	public static Rectangle p1ShieldRecharge = new Rectangle(100, 30, Color.TRANSPARENT);
+	public static Rectangle p2ShieldRecharge = new Rectangle(100, 30, Color.TRANSPARENT);
+
+	// Shield Recharge Booleans
+	public static boolean p1ShieldAvailable = true;
+	public static boolean p2ShieldAvailable = true;
+
+	// Shield Recharge Fillings
+	public static Rectangle[] p1ShieldFill = new Rectangle[999];
+	public static Rectangle[] p2ShieldFill = new Rectangle[999];
+	// Shield Recharge Fillings Counters
+	public static int p1ShieldFillCounter = 0;
+	public static int p2ShieldFillCounter = 0;
+
+	// Shield Recharge Filling Line
+	public static Line[] p1ShieldLine = new Line[999];
+	public static Line[] p2ShieldLine = new Line[999];
+	// Bullet Recharge Filling Line Counter
+	public static int p1ShieldLineCounter = 0;
+	public static int p2ShieldLineCounter = 0;
+	// Shield Position
+	public static double p1ShieldPos = 0;
+	public static double p2ShieldPos = 0;
+
+	// Pause Boolean
+	public static boolean pause = false;
+
+	// Pause Menu
+	public static Text pauseText = new Text("PAUSE");
+	public static Button pauseContinue = new Button("Continue?");
+	public static Button pauseExit = new Button("Exit");
+
+	// Game Over Button
+	public static Button gameOver = new Button("GAME OVER!");
+
+	// Winner
+	public static String winner = new String("");
+
+	// Timer Variables
+	public static Timeline animation;
+	public static int clockCounter = 0;
+	public static clock[] timer = new clock[999];
+	public static int winningTime;
+
+	// Timer loop
+	public class clock extends Pane {
+		int secondsPass = 0;
+		String S = " ";
+		String tempSecs = "";
+		String tempMins = "";
+		int mins = 0;
+
+		Label time = new Label("00:00");
+
+		private clock() {
+			time.setFont(Font.font(50));
+			time.setTranslateX(393);
+			time.setTranslateY(15);
+			getChildren().add(time);
+			animation = new Timeline(new KeyFrame(Duration.seconds(1), e -> timelabel()));
+			animation.setCycleCount(Timeline.INDEFINITE);
+			animation.play();
+		}
+
+		private void timelabel() {
+			if (secondsPass >= 0) {
+				secondsPass++;
+				if (mins < 10) {
+					tempMins = "0" + mins;
+					S = tempMins + ":" + secondsPass;
+				}
+				if (secondsPass < 10) {
+					tempSecs = "0" + secondsPass;
+					S = tempMins + ":" + tempSecs;
+				}
+				if (secondsPass % 60 == 0) {
+					secondsPass = 0;
+					mins++;
+					tempMins = mins + "";
+				}
+				time.setText(S);
+				winningTime = secondsPass;
+			}
+		}
+	}
+
+	@Override
+	public void start(Stage primaryStage) {
+		primaryStage.setTitle("HIYA!");
+		// Main Scene and Root
+		rootTitle = new Pane();
+		mainScene = new Scene(rootTitle, 900, 600);
+		primaryStage.setScene(mainScene);
+		primaryStage.show();
+
+		// Game Scene and Root
+		rootGame = new Pane();
+		sceneGame = new Scene(rootGame, 900, 600);
+
+		// Start Button
+		Button startButton = new Button("START");
+		final Label startLabel = new Label();
+		startButton.setPrefWidth(165);
+		startButton.setPrefHeight(40);
+		startButton.setLayoutX(450 - startButton.getPrefWidth() / 2);
+		startButton.setLayoutY(350 - startButton.getPrefWidth() / 2);
+		startLabel.setLayoutX(290);
+		startLabel.setLayoutY(290);
+		startButton.setStyle("-fx-background-color: #3CAEA3");
+		rootTitle.getChildren().add(startButton);
+		// changing color when hovering over button
+		startButton.setOnMouseEntered(event -> startButton.setStyle("-fx-background-color: #379F95"));
+		startButton.setOnMouseExited(event -> startButton.setStyle("-fx-background-color: #3CAEA3"));
+		// Start Button Event Handler
+		startButton.setOnAction(event -> {
+			primaryStage.setScene(scenePlayerName);
+		});
+
+		// Player Name Scene and Root
+		rootPlayerName = new Pane();
+		scenePlayerName = new Scene(rootPlayerName, 900, 600);
+		Rectangle p1Model = new Rectangle(50, 50, Color.CRIMSON);
+		p1Model.setX(225 - p1Model.getWidth() / 2);
+		p1Model.setY(300 - p1Model.getHeight() / 2);
+		p1Model.setStroke(Color.BLACK);
+		p1Model.setStrokeWidth(1);
+		rootPlayerName.getChildren().add(p1Model);
+		Label p1Label = new Label("P1");
+		p1Label.setLayoutX(p1Model.getX() + 18);
+		p1Label.setLayoutY(p1Model.getY() + 18);
+		rootPlayerName.getChildren().add(p1Label);
+		Rectangle p2Model = new Rectangle(50, 50, Color.ROYALBLUE);
+		p2Model.setX(675 - p2Model.getWidth() / 2);
+		p2Model.setY(300 - p2Model.getHeight() / 2);
+		p2Model.setStroke(Color.BLACK);
+		p2Model.setStrokeWidth(1);
+		rootPlayerName.getChildren().add(p2Model);
+		Label p2Label = new Label("P2");
+		p2Label.setLayoutX(p2Model.getX() + 18);
+		p2Label.setLayoutY(p2Model.getY() + 18);
+		rootPlayerName.getChildren().add(p2Label);
+		p1TF.setPrefColumnCount(10);
+		p1TF.setLayoutX(p1Model.getX() - 35);
+		p1TF.setLayoutY(p1Model.getY() + 65);
+		rootPlayerName.getChildren().add(p1TF);
+		p1TF.setOnAction(event -> {
+			p1NameInput = p1TF.getCharacters().toString();
+			p1Name.setText(p1NameInput);
+		});
+		p2TF.setPrefColumnCount(10);
+		p2TF.setLayoutX(p2Model.getX() - 35);
+		p2TF.setLayoutY(p2Model.getY() + 65);
+		rootPlayerName.getChildren().add(p2TF);
+		p2TF.setOnAction(event -> {
+			p2NameInput = p2TF.getCharacters().toString();
+			p2Name.setText(p2NameInput);
+		});
+		Button startGameButton = new Button("BEGIN");
+		startGameButton.setPrefWidth(165);
+		startGameButton.setPrefHeight(40);
+		startGameButton.setLayoutX(450 - startGameButton.getPrefWidth() / 2);
+		startGameButton.setLayoutY(400 - startGameButton.getPrefHeight() / 2);
+		rootPlayerName.getChildren().add(startGameButton);
+		startGameButton.setOnAction(event -> {
+			primaryStage.setScene(sceneGame);
+			gameLoop.start();
+			timer[clockCounter] = new clock();
+			rootGame.getChildren().add(timer[clockCounter]);
+			p1NameInput = p1TF.getCharacters().toString();
+			p1Name.setText(p1NameInput);
+			p2NameInput = p2TF.getCharacters().toString();
+			p2Name.setText(p2NameInput);
+		});
+		// Back Button (Player Name to Title Page)
+		Button backButtonPN = new Button("<-");
+		rootPlayerName.getChildren().add(backButtonPN);
+		backButtonPN.setPrefWidth(60);
+		backButtonPN.setPrefHeight(40);
+		backButtonPN.setLayoutX(50 - backButtonPN.getPrefWidth() / 2);
+		backButtonPN.setLayoutY(40 - backButtonPN.getPrefWidth() / 2);
+		// Back Button (High Score to Title Page) Event Handler
+		backButtonPN.setOnAction(event -> primaryStage.setScene(mainScene));
+		// Button Dimming
+		backButtonPN.setStyle("-fx-background-color: #3CAEA3");
+		backButtonPN.setOnMouseEntered(event -> backButtonPN.setStyle("-fx-background-color: #379F95"));
+		backButtonPN.setOnMouseExited(event -> backButtonPN.setStyle("-fx-background-color: #3CAEA3"));
+
+		// Title
+		Text title = new Text("HIYA!");
+		title.setFont(Font.font("impact", 80));
+		title.setX(365);
+		title.setY(200);
+		rootTitle.getChildren().add(title);
+
+		// Creator Text
+		Text creators = new Text("DESIGNED BY MARCUS UY AND RYAN SETO 2019.");
+		creators.setY(590);
+		creators.setX(316);
+		rootTitle.getChildren().add(creators);
+
+		// High Score Scene and Root
+		rootHS = new Pane();
+		sceneHS = new Scene(rootHS, 900, 600);
+		// High Score Text
+		Text highScore = new Text();
+		highScore.setText("HIGHSCORES");
+		highScore.setFont(Font.font("verdana", 40));
+		highScore.setY(55);
+		highScore.setX(315);
+		// High Score Page
+		Rectangle highScorePage = new Rectangle(400, 580);
+		highScorePage.setX(250);
+		highScorePage.setY(10);
+		highScorePage.setStroke(Color.BLACK);
+		highScorePage.setFill(Color.WHITE);
+		rootHS.getChildren().addAll(highScorePage, highScore);
+
+		// Back Button (High Score to Title Page)
+		Button backButtonHS = new Button("<-");
+		rootHS.getChildren().add(backButtonHS);
+		backButtonHS.setPrefWidth(60);
+		backButtonHS.setPrefHeight(40);
+		backButtonHS.setLayoutX(50 - backButtonHS.getPrefWidth() / 2);
+		backButtonHS.setLayoutY(40 - backButtonHS.getPrefWidth() / 2);
+		// Back Button (High Score to Title Page) Event Handler
+		backButtonHS.setOnAction(event -> primaryStage.setScene(mainScene));
+		// Button Dimming
+		backButtonHS.setStyle("-fx-background-color: #3CAEA3");
+		backButtonHS.setOnMouseEntered(event -> backButtonHS.setStyle("-fx-background-color: #379F95"));
+		backButtonHS.setOnMouseExited(event -> backButtonHS.setStyle("-fx-background-color: #3CAEA3"));
+		// High Score Button
+		Button highscoresButton = new Button("HIGH SCORES"); // High Scores Button
+		final Label highLabel = new Label();
+		rootTitle.getChildren().add(highscoresButton);
+		highscoresButton.setPrefWidth(165);
+		highscoresButton.setPrefHeight(40);
+		highscoresButton.setLayoutX(450 - highscoresButton.getPrefWidth() / 2);
+		highscoresButton.setLayoutY(400 - highscoresButton.getPrefWidth() / 2);
+		highLabel.setLayoutX(290);
+		highLabel.setLayoutY(290);
+		highscoresButton.setStyle("-fx-background-color: #EE4540");
+		highscoresButton.setOnMouseEntered(event -> highscoresButton.setStyle("-fx-background-color: #D93F3B"));
+		highscoresButton.setOnMouseExited(event -> highscoresButton.setStyle("-fx-background-color: #EE4540"));
+		// High Score Button Event Handler
+		highscoresButton.setOnAction(event -> primaryStage.setScene(sceneHS));
+
+		// Instructions Scene and Pane
+		rootI = new Pane();
+		sceneI = new Scene(rootI, 900, 600);
+		// Instructions Page
+		Rectangle instructionsPage = new Rectangle(400, 580); // instructions "box"
+		instructionsPage.setX(250);
+		instructionsPage.setY(10);
+		instructionsPage.setStroke(Color.BLACK);
+		instructionsPage.setFill(Color.WHITE);
+		rootI.getChildren().add(instructionsPage);
+		// Instructions Title
+		Text instructionsTitle = new Text();
+		instructionsTitle.setText("INSTRUCTIONS");
+		instructionsTitle.setFont(Font.font("verdana", 40));
+		instructionsTitle.setY(55);
+		instructionsTitle.setX(295);
+		rootI.getChildren().add(instructionsTitle);
+		// P1 Instructions
+		Text p1Instructions = new Text("P1:");
+		p1Instructions.setFont(Font.font("verdana", 20));
+		p1Instructions.setX(265);
+		p1Instructions.setY(110);
+		// P1 Instructions Text
+		VBox p1TextInstructions = new VBox(20); // instructions text
+		Text p1TextInstructionsLine1 = new Text("Press W to move up.");
+		Text p1TextInstructionsLine2 = new Text("Press S to move down.");
+		Text p1TextInstructions3 = new Text("Press D to shoot.");
+		p1TextInstructions.getChildren().addAll(p1TextInstructionsLine1, p1TextInstructionsLine2, p1TextInstructions3);
+		p1TextInstructions.setLayoutY(95);
+		p1TextInstructions.setLayoutX(310);
+		rootI.getChildren().add(p1TextInstructions);
+
+		// P2 Instructions
+		Text p2Instructions = new Text("P2:");
+		p2Instructions.setFont(Font.font("verdana", 20));
+		p2Instructions.setX(265);
+		p2Instructions.setY(240);
+		rootI.getChildren().addAll(p1Instructions, p2Instructions);
+		// P2 Instructions Text
+		VBox p2TextInstructions = new VBox(20);
+		Text p2TextInstructionsLine1 = new Text("Press UP Arrow to move up.");
+		Text p2TextInstructionsLine2 = new Text("Press DOWN Arrow to move down.");
+		Text p2TextInstructionsLine3 = new Text("Press LEFT Arrow to shoot.");
+		p2TextInstructions.getChildren().addAll(p2TextInstructionsLine1, p2TextInstructionsLine2,
+				p2TextInstructionsLine3);
+		p2TextInstructions.setLayoutY(225);
+		p2TextInstructions.setLayoutX(310);
+		rootI.getChildren().add(p2TextInstructions);
+
+		// Other Instructions
+		Text otherInstructions = new Text("Other:");
+		otherInstructions.setFont(Font.font("verdana", 20));
+		otherInstructions.setLayoutX(265);
+		otherInstructions.setLayoutY(360);
+		rootI.getChildren().add(otherInstructions);
+		// Other Instructions Text
+		VBox otherTextInstructions = new VBox(20);
+		Text pauseInstructions = new Text("Press P to pause.");
+		otherTextInstructions.getChildren().addAll(pauseInstructions);
+		otherTextInstructions.setLayoutY(370);
+		otherTextInstructions.setLayoutX(310);
+		rootI.getChildren().add(otherTextInstructions);
+
+		// Back Button (Instructions to Title Page)
+		Button backButtonI = new Button("<-"); // Back Button
+		rootI.getChildren().add(backButtonI);
+		backButtonI.setPrefWidth(60);
+		backButtonI.setPrefHeight(40);
+		backButtonI.setLayoutX(50 - backButtonI.getPrefWidth() / 2);
+		backButtonI.setLayoutY(40 - backButtonI.getPrefWidth() / 2);
+		backButtonI.setOnAction(event -> primaryStage.setScene(mainScene));
+		backButtonI.setStyle("-fx-background-color: #3CAEA3");
+		backButtonI.setOnMouseEntered(event -> backButtonI.setStyle("-fx-background-color: #379F95"));
+		backButtonI.setOnMouseExited(event -> backButtonI.setStyle("-fx-background-color: #3CAEA3"));
+
+		// Instructions Button
+		Button instructionsButton = new Button("INSTRUCTIONS"); // Instructions Button
+		final Label insLabel = new Label();
+		rootTitle.getChildren().add(instructionsButton);
+		instructionsButton.setPrefWidth(165);
+		instructionsButton.setPrefHeight(40);
+		instructionsButton.setLayoutX(450 - instructionsButton.getPrefWidth() / 2);
+		instructionsButton.setLayoutY(450 - instructionsButton.getPrefWidth() / 2);
+		insLabel.setLayoutX(290);
+		insLabel.setLayoutY(290);
+		instructionsButton.setStyle("-fx-background-color: #3CAEA3");
+		instructionsButton.setOnMouseEntered(event -> instructionsButton.setStyle("-fx-background-color: #379F95"));
+		instructionsButton.setOnMouseExited(event -> instructionsButton.setStyle("-fx-background-color: #3CAEA3"));
+		// Instructions Button Event Handler
+		instructionsButton.setOnAction(event -> primaryStage.setScene(sceneI));
+
+		// P1 Bullet Array Initialization
+		for (int i = 0; i < p1Bullet.length; i++) {
+			p1Bullet[i] = new Rectangle(30, 30);
+		}
+		// P2 Bullet Array Initialization
+		for (int j = 0; j < p2Bullet.length; j++) {
+			p2Bullet[j] = new Rectangle(30, 30);
+		}
+
+		// P1 Bullet Ammo Fill Array Initialization
+		for (int i = 0; i < p1AmmoFill.length; i++) {
+			p1AmmoFill[i] = new Rectangle(1, 30);
+		}
+
+		// P2 Bullet Ammo Fill Array Initialization
+		for (int i = 0; i < p2AmmoFill.length; i++) {
+			p2AmmoFill[i] = new Rectangle(1, 30);
+		}
+
+		// P1 Ammo Fill Line Array Initialization
+		for (int i = 0; i < p1AmmoLine.length; i++) {
+			p1AmmoLine[i] = new Line(150, 465, 150, 495);
+		}
+
+		// P2 Ammo Fill Line Array Initialization
+		for (int i = 0; i < p2AmmoLine.length; i++) {
+			p2AmmoLine[i] = new Line(750, 465, 750, 495);
+		}
+
+		// P1 Shield Array Initialization
+		for (int i = 0; i < p1Shield.length; i++) {
+			p1Shield[i] = new Rectangle(15, 100);
+		}
+		// P2 Shield Array Initialization
+		for (int j = 0; j < p2Shield.length; j++) {
+			p2Shield[j] = new Rectangle(15, 100);
+		}
+
+		// P1 Shield Fill Array Initialization
+		for (int i = 0; i < p1ShieldFill.length; i++) {
+			p1ShieldFill[i] = new Rectangle(1, 30);
+		}
+
+		// P2 Shield Fill Array Initialization
+		for (int i = 0; i < p2ShieldFill.length; i++) {
+			p2ShieldFill[i] = new Rectangle(1, 30);
+		}
+
+		// P1 Shield Line Array Initialization
+		for (int i = 0; i < p1ShieldLine.length; i++) {
+			p1ShieldLine[i] = new Line(150, 465, 150, 495);
+		}
+
+		// P2 Shield Line Array Initialization
+		for (int i = 0; i < p2ShieldLine.length; i++) {
+			p2ShieldLine[i] = new Line(750, 465, 750, 495);
+		}
+
+		// Key Numbers
+		int mapCenter = 250;
+		int screenCenter = (int) sceneGame.getWidth() / 2;
+		int p1Center = 100;
+		int p2Center = 800;
+
+		// Map Location
+		map.setX(screenCenter - map.getWidth() / 2);
+		map.setY(mapCenter - map.getHeight() / 2);
+		rootGame.getChildren().add(map);
+		map.setFill(Color.TRANSPARENT);
+		map.setStroke(Color.BLACK);
+		map.setStrokeWidth(2);
+
+		// Player 1 Start Position
+		p1.setX(p1Center - p1.getWidth() / 2);
+		p1.setY(mapCenter - p1.getHeight() / 2);
+		rootGame.getChildren().add(p1);
+		p1.setFill(Color.CRIMSON);
+		p1.setStroke(Color.BLACK);
+		p1.setStrokeWidth(1);
+
+		// Player 1 Name Position
+		p1Name.setPrefWidth(98);
+		p1Name.setPrefHeight(30);
+		p1Name.setLayoutX(map.getX() - p1Name.getPrefWidth() - 3);
+		p1Name.setLayoutY(map.getY() + map.getHeight() + 5);
+		rootGame.getChildren().add(p1Name);
+		Rectangle p1NameBorder = new Rectangle(p1Name.getPrefWidth(), p1Name.getPrefHeight());
+		p1NameBorder.setX(p1Name.getLayoutX() - 2);
+		p1NameBorder.setY(p1Name.getLayoutY());
+		p1NameBorder.setFill(Color.TRANSPARENT);
+		p1NameBorder.setStroke(Color.BLACK);
+		p1NameBorder.setStrokeWidth(1);
+		rootGame.getChildren().add(p1NameBorder);
+
+		// Player 2 Start Position
+		p2.setX(p2Center - p2.getWidth() / 2);
+		p2.setY(mapCenter - p2.getHeight() / 2);
+		rootGame.getChildren().add(p2);
+		p2.setFill(Color.ROYALBLUE);
+		p2.setStroke(Color.BLACK);
+		p2.setStrokeWidth(1);
+
+		// Player 2 Name Position
+		p2Name.setPrefWidth(98);
+		p2Name.setPrefHeight(30);
+		p2Name.setLayoutX(map.getX() + map.getWidth() + 7);
+		p2Name.setLayoutY(map.getY() + map.getHeight() + 5);
+		rootGame.getChildren().add(p2Name);
+		Rectangle p2NameBorder = new Rectangle(p2Name.getPrefWidth(), p2Name.getPrefHeight());
+		p2NameBorder.setX(p2Name.getLayoutX() - 2);
+		p2NameBorder.setY(p2Name.getLayoutY());
+		p2NameBorder.setFill(Color.TRANSPARENT);
+		p2NameBorder.setStroke(Color.BLACK);
+		p2NameBorder.setStrokeWidth(1);
+		rootGame.getChildren().add(p2NameBorder);
+
+		// lives locations
+		Rectangle p1Lives1 = new Rectangle(30, 30);
+		p1Lives1.setX(map.getX());
+		p1Lives1.setY(map.getY() + map.getHeight() + 5);
+		p1Lives1.setFill(Color.GOLD);
+		p1Lives1.setStroke(Color.BLACK);
+		p1Lives1.setStrokeWidth(1);
+		rootGame.getChildren().add(p1Lives1);
+
+		Rectangle p1Lives2 = new Rectangle(30, 30);
+		p1Lives2.setX(p1Lives1.getX() + p1Lives2.getWidth() + 5);
+		p1Lives2.setY(map.getY() + map.getHeight() + 5);
+		p1Lives2.setFill(Color.GOLD);
+		p1Lives2.setStroke(Color.BLACK);
+		p1Lives2.setStrokeWidth(1);
+		rootGame.getChildren().add(p1Lives2);
+
+		Rectangle p1Lives3 = new Rectangle(30, 30);
+		p1Lives3.setX(p1Lives2.getX() + p1Lives3.getWidth() + 5);
+		p1Lives3.setY(map.getY() + map.getHeight() + 5);
+		p1Lives3.setFill(Color.GOLD);
+		p1Lives3.setStroke(Color.BLACK);
+		p1Lives3.setStrokeWidth(1);
+		rootGame.getChildren().add(p1Lives3);
+
+		Rectangle p2Lives1 = new Rectangle(30, 30);
+		p2Lives1.setX(map.getX() + map.getWidth() - p2Lives1.getWidth());
+		p2Lives1.setY(map.getY() + map.getHeight() + 5);
+		p2Lives1.setFill(Color.GOLD);
+		p2Lives1.setStroke(Color.BLACK);
+		p2Lives1.setStrokeWidth(1);
+		rootGame.getChildren().add(p2Lives1);
+
+		Rectangle p2Lives2 = new Rectangle(30, 30);
+		p2Lives2.setX(p2Lives1.getX() - p2Lives2.getWidth() - 5);
+		p2Lives2.setY(map.getY() + map.getHeight() + 5);
+		p2Lives2.setFill(Color.GOLD);
+		p2Lives2.setStroke(Color.BLACK);
+		p2Lives2.setStrokeWidth(1);
+		rootGame.getChildren().add(p2Lives2);
+
+		Rectangle p2Lives3 = new Rectangle(30, 30);
+		p2Lives3.setX(p2Lives2.getX() - p2Lives3.getWidth() - 5);
+		p2Lives3.setY(map.getY() + map.getHeight() + 5);
+		p2Lives3.setFill(Color.GOLD);
+		p2Lives3.setStroke(Color.BLACK);
+		p2Lives3.setStrokeWidth(1);
+		rootGame.getChildren().add(p2Lives3);
+
+		// P1 Recharge Bar
+		p1BulletRecharge.setX(map.getX());
+		p1BulletRecharge.setY(p1Lives1.getY() + p1Lives1.getHeight() + 5);
+		p1BulletRecharge.setStroke(Color.BLACK);
+		p1BulletRecharge.setStrokeWidth(1);
+		rootGame.getChildren().add(p1BulletRecharge);
+
+		// P2 Recharge Bar
+		p2BulletRecharge.setX(p2Lives3.getX());
+		p2BulletRecharge.setY(p2Lives3.getY() + p2Lives3.getHeight() + 5);
+		p2BulletRecharge.setStroke(Color.BLACK);
+		p2BulletRecharge.setStrokeWidth(1);
+		rootGame.getChildren().add(p2BulletRecharge);
+
+		// P1 Recharge Bar
+		p1ShieldRecharge.setX(p1BulletRecharge.getX());
+		p1ShieldRecharge.setY(p1BulletRecharge.getY() + p1BulletRecharge.getHeight() + 5);
+		p1ShieldRecharge.setStroke(Color.BLACK);
+		p1ShieldRecharge.setStrokeWidth(1);
+		rootGame.getChildren().add(p1ShieldRecharge);
+
+		// P2 Recharge Bar
+		p2ShieldRecharge.setX(p2BulletRecharge.getX());
+		p2ShieldRecharge.setY(p2BulletRecharge.getY() + p2BulletRecharge.getHeight() + 5);
+		p2ShieldRecharge.setStroke(Color.BLACK);
+		p2ShieldRecharge.setStrokeWidth(1);
+		rootGame.getChildren().add(p2ShieldRecharge);
+
+		// Event Handler Key Released
+		sceneGame.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
+			// Move Up (P1) Event Handler
+			if (event.getCode() == KeyCode.W) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p1MoveUp = false;
+				}
+			}
+			// Move Down (P1) Event Handler
+			if (event.getCode() == KeyCode.S) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p1MoveDown = false;
+				}
+			}
+			// Move Up (P2) Event Handler
+			if (event.getCode() == KeyCode.UP) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p2MoveUp = false;
+				}
+			}
+			// Move Down (P2) Event Handler
+			if (event.getCode() == KeyCode.DOWN) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p2MoveDown = false;
+				}
+			}
+		});
+
+		// Event Handler
+		sceneGame.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+			// Move Up (P1) Event Handler
+			if (event.getCode() == KeyCode.W) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p1MoveUp = true;
+				}
+			}
+			// Move Down (P1) Event Handler
+			if (event.getCode() == KeyCode.S) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p1MoveDown = true;
+				}
+			}
+			// Move Up (P2) Event Handler
+			if (event.getCode() == KeyCode.UP) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p2MoveUp = true;
+				}
+			}
+			// Move Down (P2) Event Handler
+			if (event.getCode() == KeyCode.DOWN) {
+				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+					p2MoveDown = true;
+				}
+			}
+			// Player 1 Bullet Event Handler
+			if (event.getCode() == KeyCode.D) {
+				try {
+					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+						p1Bullet(p1BulletCounter);
+						if (p1Ammo == false) {
+							p1BulletRecharge();
+							rootGame.getChildren().add(p1AmmoFill[p1AmmoFillCounter]);
+						}
+					}
+				} catch (IllegalArgumentException e) {
+				}
+
+			}
+			// Player 2 Bullet Event Handler
+			if (event.getCode() == KeyCode.LEFT) {
+				try {
+					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+						p2Bullet(p2BulletCounter);
+						if (p2Ammo == false) {
+							p2BulletRecharge();
+							rootGame.getChildren().add(p2AmmoFill[p2AmmoFillCounter]);
+						}
+					}
+				} catch (IllegalArgumentException e) {
+				}
+
+			}
+			// Player 1 Shield Event Handler
+			if (event.getCode() == KeyCode.A) {
+				try {
+					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+						
+					}
+				} catch (IllegalArgumentException e) {
+				}
+
+			}
+			// Player 2 Shield Event Handler
+			if (event.getCode() == KeyCode.RIGHT) {
+				try {
+					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+						
+					}
+				} catch (IllegalArgumentException e) {
+				}
+
+			}
+
+			// Pause Button
+			if (event.getCode() == KeyCode.P) {
+				if (pause == false) {
+					gameLoop.stop();
+					pause = true;
+					p1BulletTransition.pause();
+					p2BulletTransition.pause();
+					p1RechargeTransition.pause();
+					p2RechargeTransition.pause();
+
+					pauseText.setFont(Font.font("impact", 80));
+					pauseText.setX(350);
+					pauseText.setY(200);
+					rootGame.getChildren().add(pauseText);
+					pauseContinue.setPrefWidth(125);
+					pauseContinue.setPrefHeight(75);
+					pauseContinue.setLayoutX(300 - pauseContinue.getPrefWidth() / 2);
+					pauseContinue.setLayoutY(325 - pauseContinue.getPrefWidth() / 2);
+					rootGame.getChildren().add(pauseContinue);
+					pauseExit.setPrefWidth(125);
+					pauseExit.setPrefHeight(75);
+					pauseExit.setLayoutX(600 - pauseExit.getPrefWidth() / 2);
+					pauseExit.setLayoutY(325 - pauseExit.getPrefWidth() / 2);
+					rootGame.getChildren().add(pauseExit);
+					animation.pause();
+				} else if (pause == true) {
+					gameLoop.start();
+					p1BulletTransition.play();
+					p2BulletTransition.play();
+					p1RechargeTransition.play();
+					p2RechargeTransition.play();
+					pause = false;
+					rootGame.getChildren().remove(pauseText);
+					rootGame.getChildren().remove(pauseContinue);
+					rootGame.getChildren().remove(pauseExit);
+					animation.play();
+				}
+			}
+		});
+
+		// Pause Continue Button Event Handler
+		pauseContinue.setOnAction(event -> {
+			gameLoop.start();
+			p1BulletTransition.play();
+			p2BulletTransition.play();
+			p1RechargeTransition.play();
+			p2RechargeTransition.play();
+			pause = false;
+			rootGame.getChildren().remove(pauseText);
+			rootGame.getChildren().remove(pauseContinue);
+			rootGame.getChildren().remove(pauseExit);
+			animation.play();
+		});
+
+		// Pause Exit Button Event Handler
+		pauseExit.setOnAction(event -> {
+			rootGame.getChildren().remove(pauseText);
+			rootGame.getChildren().remove(pauseContinue);
+			rootGame.getChildren().remove(pauseExit);
+			primaryStage.setScene(mainScene);
+			rootGame.getChildren().remove(gameOver);
+			rootGame.getChildren().remove(timer[clockCounter]);
+			clockCounter++;
+			p1.setY(mapCenter);
+			p2.setY(mapCenter);
+			p1MoveUp = false;
+			p1MoveDown = false;
+			p2MoveUp = false;
+			p2MoveDown = false;
+
+			p1BulletTransition.stop();
+			rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+			p1BulletCounter++;
+			p2BulletTransition.stop();
+			rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+			p2BulletCounter++;
+			p1RechargeTransition.stop();
+			rootGame.getChildren().remove(p1AmmoFill[p1AmmoFillCounter]);
+			p1AmmoFillCounter++;
+			p2RechargeTransition.stop();
+			rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
+			p2AmmoFillCounter++;
+
+			p1AmmoFill[p1AmmoFillCounter].setX(p1BulletRecharge.getX());
+			p2AmmoFill[p2AmmoFillCounter].setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
+			p1Ammo = true;
+			p2Ammo = true;
+			if (p1Lives == 0) {
+				rootGame.getChildren().add(p1Lives1);
+				rootGame.getChildren().add(p1Lives2);
+				rootGame.getChildren().add(p1Lives3);
+				p1Lives = 3;
+			} else if (p1Lives == 1) {
+				rootGame.getChildren().add(p1Lives2);
+
+			} else if (p1Lives == 2) {
+				rootGame.getChildren().add(p1Lives3);
+				p1Lives = 3;
+			}
+			if (p2Lives == 0) {
+				rootGame.getChildren().add(p2Lives1);
+				rootGame.getChildren().add(p2Lives2);
+				rootGame.getChildren().add(p2Lives3);
+				p2Lives = 3;
+			} else if (p2Lives == 1) {
+				rootGame.getChildren().add(p2Lives2);
+				rootGame.getChildren().add(p2Lives3);
+				p2Lives = 3;
+			} else if (p2Lives == 2) {
+				rootGame.getChildren().add(p2Lives3);
+				p2Lives = 3;
+			}
+			pause = false;
+			primaryStage.setScene(mainScene);
+		});
+
+		// Animation Timer/Game Loop
+		gameLoop = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				// P1 Collision Detection
+				if (p1.getBoundsInParent().intersects(p2Bullet[p2BulletCounter].getBoundsInParent())) {
+					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+					p2BulletCounter++;
+					p1Lives--;
+				}
+				// P2 Collision Detection
+				if (p2.getBoundsInParent().intersects(p1Bullet[p1BulletCounter].getBoundsInParent())) {
+					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+					p1BulletCounter++;
+					p2Lives--;
+				}
+
+				// P1 Bullet Disappear Check
+				if (p1Bullet[p1BulletCounter].getTranslateX() == p1DesiredX) {
+					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+					p1BulletCounter++;
+				}
+				// P2 Bullet Disappear Check
+				if (p2Bullet[p2BulletCounter].getTranslateX() == p2DesiredX) {
+					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+					p2BulletCounter++;
+				}
+
+				// Bullet Collision (With Each Other)
+				if (p1Bullet[p1BulletCounter].getBoundsInParent()
+						.intersects(p2Bullet[p2BulletCounter].getBoundsInParent())
+						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
+					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+					p1BulletCounter++;
+					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+					p2BulletCounter++;
+				}
+
+				// Shield Collision Detection
+				if (p1Shield[p1ShieldCounter].getBoundsInParent()
+						.intersects(p2Bullet[p2BulletCounter].getBoundsInParent())
+						&& p2Bullet[p2BulletCounter].getTranslateX() != 0.0) {
+					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+					p2BulletCounter++;
+					rootGame.getChildren().remove(p1Shield[p1ShieldCounter]);
+					p1ShieldCounter++;
+					p1ShieldAvailable = false;
+					p1ShieldRecharge();
+				}
+				if (p2Shield[p2ShieldCounter].getBoundsInParent()
+						.intersects(p1Bullet[p1BulletCounter].getBoundsInParent())
+						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
+					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+					p1BulletCounter++;
+					rootGame.getChildren().remove(p2Shield[p2ShieldCounter]);
+					p2ShieldCounter++;
+					p2ShieldAvailable = false;
+					p2ShieldRecharge();
+				}
+
+				// P1 Lives Check
+				if (p1Lives == 2) {
+					rootGame.getChildren().remove(p1Lives3);
+				} else if (p1Lives == 1) {
+					rootGame.getChildren().remove(p1Lives2);
+				} else if (p1Lives == 0) {
+					rootGame.getChildren().remove(p1Lives1);
+
+				}
+
+				// P2 Lives Check
+				if (p2Lives == 2) {
+					rootGame.getChildren().remove(p2Lives3);
+				} else if (p2Lives == 1) {
+					rootGame.getChildren().remove(p2Lives2);
+				} else if (p2Lives == 0) {
+					rootGame.getChildren().remove(p2Lives1);
+				}
+
+				// P1 Bullet Recharge Animation
+				p1AmmoFill[p1AmmoFillCounter].setWidth(p1AmmoLine[p1AmmoLineCounter].getTranslateX());
+				if (p1AmmoFill[p1AmmoFillCounter].getWidth() == p1BulletRecharge.getWidth()) {
+					rootGame.getChildren().remove(p1AmmoFill[p1AmmoFillCounter]);
+					p1AmmoLine[p1AmmoLineCounter].setStartX(p1BulletRecharge.getX());
+					p1AmmoLine[p1AmmoLineCounter].setEndX(p1AmmoLine[p1AmmoLineCounter].getStartX());
+					rootGame.getChildren().remove(p1AmmoLine[p1AmmoLineCounter]);
+					p1AmmoFillCounter++;
+					p1AmmoLineCounter++;
+					p1Ammo = true;
+				}
+
+				// P2 Bullet Recharge Animation
+				p2AmmoFill[p2AmmoFillCounter].setWidth(Math.abs(p2AmmoLine[p2AmmoLineCounter].getTranslateX()));
+				p2AmmoFill[p2AmmoFillCounter].setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth()
+						+ p2AmmoLine[p2AmmoLineCounter].getTranslateX());
+				if (p2AmmoFill[p2AmmoFillCounter].getWidth() == p2BulletRecharge.getWidth()) {
+					rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
+					p2AmmoLine[p2AmmoLineCounter].setStartX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
+					p2AmmoLine[p2AmmoLineCounter].setEndX(p2AmmoLine[p2AmmoLineCounter].getStartX());
+					rootGame.getChildren().remove(p2AmmoLine[p2AmmoLineCounter]);
+					p2AmmoFillCounter++;
+					p2AmmoLineCounter++;
+					p2Ammo = true;
+				}
+
+				// P1 Shield Recharge Animation
+				p1ShieldFill[p1ShieldFillCounter].setWidth(p1ShieldLine[p1ShieldLineCounter].getTranslateX());
+				if (p1ShieldFill[p1ShieldFillCounter].getWidth() == p1ShieldRecharge.getWidth()) {
+					rootGame.getChildren().remove(p1ShieldFill[p1ShieldFillCounter]);
+					p1ShieldLine[p1ShieldLineCounter].setStartX(p1ShieldRecharge.getX());
+					p1ShieldLine[p1ShieldLineCounter].setEndX(p1ShieldLine[p1ShieldLineCounter].getStartX());
+					rootGame.getChildren().remove(p1ShieldLine[p1ShieldLineCounter]);
+					p1ShieldFillCounter++;
+					p1ShieldLineCounter++;
+					p1ShieldAvailable = true;
+				}
+
+				// P2 Shield Recharge Animation
+				p2ShieldFill[p2ShieldFillCounter].setWidth(Math.abs(p2ShieldLine[p2ShieldLineCounter].getTranslateX()));
+				p2ShieldFill[p2ShieldFillCounter].setX(p2ShieldRecharge.getX() + p2ShieldRecharge.getWidth()
+						+ p2ShieldLine[p2ShieldLineCounter].getTranslateX());
+				if (p2ShieldFill[p2ShieldFillCounter].getWidth() == p2ShieldRecharge.getWidth()) {
+					rootGame.getChildren().remove(p2ShieldFill[p2ShieldFillCounter]);
+					p2ShieldLine[p2ShieldLineCounter].setStartX(p2ShieldRecharge.getX() + p2ShieldRecharge.getWidth());
+					p2ShieldLine[p2ShieldLineCounter].setEndX(p2ShieldLine[p2ShieldLineCounter].getStartX());
+					rootGame.getChildren().remove(p2ShieldLine[p2ShieldLineCounter]);
+					p2ShieldFillCounter++;
+					p2ShieldLineCounter++;
+					p2ShieldAvailable = true;
+				}
+
+				// P1 Move Up
+				p1NewY = p1.getY() - 8;
+				if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
+					if (p1MoveUp) {
+						p1.setY(p1NewY);
+					}
+				}
+				// P1 Move Down
+				p1NewY = p1.getY() + 8;
+				if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
+					if (p1MoveDown) {
+						p1.setY(p1NewY);
+					}
+				}
+				// P2 Move Up
+				p2NewY = p2.getY() - 8;
+				if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
+					if (p2MoveUp) {
+						p2.setY(p2NewY);
+					}
+				}
+				// P2 Move Down
+				p2NewY = p2.getY() + 8;
+				if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
+					if (p2MoveDown) {
+						p2.setY(p2NewY);
+					}
+				}
+
+				// Game Over
+				if (p1Lives == 0 || p2Lives == 0) {
+					gameLoop.stop();
+					p1BulletTransition.pause();
+					p2BulletTransition.pause();
+					p1RechargeTransition.pause();
+					p2RechargeTransition.pause();
+					animation.stop();
+					gameOver.setPrefWidth(400);
+					gameOver.setPrefHeight(100);
+					gameOver.setLayoutX(450 - gameOver.getPrefWidth() / 2);
+					gameOver.setLayoutY(mapCenter - gameOver.getPrefHeight() / 2);
+					rootGame.getChildren().add(gameOver);
+					if (p1Lives == 0) {
+						winner = p2NameInput;
+					} else if (p2Lives == 0) {
+						winner = p1NameInput;
+					}
+					System.out.println("Game Over! " + winner + " won!");
+					System.out.println("It took " + winningTime + " seconds.");
+					gameOver.setOnAction(event -> {
+						rootGame.getChildren().remove(gameOver);
+						rootGame.getChildren().remove(timer[clockCounter]);
+						clockCounter++;
+						p1.setY(mapCenter);
+						p2.setY(mapCenter);
+						p1MoveUp = false;
+						p1MoveDown = false;
+						p2MoveUp = false;
+						p2MoveDown = false;
+
+						p1BulletTransition.stop();
+						rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
+						p1BulletCounter++;
+						p2BulletTransition.stop();
+						rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
+						p2BulletCounter++;
+						p1RechargeTransition.stop();
+						rootGame.getChildren().remove(p1AmmoFill[p1AmmoFillCounter]);
+						p1AmmoFillCounter++;
+						p2RechargeTransition.stop();
+						rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
+						p2AmmoFillCounter++;
+
+						p1AmmoFill[p1AmmoFillCounter].setX(p1BulletRecharge.getX());
+						p2AmmoFill[p2AmmoFillCounter].setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
+						p1Ammo = true;
+						p2Ammo = true;
+						if (p1Lives == 0) {
+							rootGame.getChildren().add(p1Lives1);
+							rootGame.getChildren().add(p1Lives2);
+							rootGame.getChildren().add(p1Lives3);
+							p1Lives = 3;
+						} else if (p1Lives == 1) {
+							rootGame.getChildren().add(p1Lives2);
+
+						} else if (p1Lives == 2) {
+							rootGame.getChildren().add(p1Lives3);
+							p1Lives = 3;
+						}
+						if (p2Lives == 0) {
+							rootGame.getChildren().add(p2Lives1);
+							rootGame.getChildren().add(p2Lives2);
+							rootGame.getChildren().add(p2Lives3);
+							p2Lives = 3;
+						} else if (p2Lives == 1) {
+							rootGame.getChildren().add(p2Lives2);
+							rootGame.getChildren().add(p2Lives3);
+							p2Lives = 3;
+						} else if (p2Lives == 2) {
+							rootGame.getChildren().add(p2Lives3);
+							p2Lives = 3;
+						}
+
+						primaryStage.setScene(mainScene);
+					});
+				}
+			}
+		};
+	}
+
+	// P1 Bullet Method
+	public static void p1Bullet(int num) {
+		if (p1Ammo) {
+			p1Bullet[num].setX(p1.getX() + p1.getWidth() / 2 - p1Bullet[num].getWidth() / 2);
+			p1Bullet[num].setY(p1.getY() + p1.getHeight() / 2 - p1Bullet[num].getHeight() / 2);
+			p1Bullet[num].setFill(Color.BLACK);
+			p1Bullet[num].setStroke(Color.BLACK);
+			p1Bullet[num].setStrokeWidth(1);
+			rootGame.getChildren().add(p1Bullet[num]);
+			p1BulletTransition.setDuration(Duration.millis(500));
+			p1BulletTransition.setNode(p1Bullet[num]);
+			p1BulletTransition.setToX(p1DesiredX);
+			p1BulletTransition.play();
+		}
+		p1Ammo = false;
+	}
+
+	// P2 Bullet Method
+	public static void p2Bullet(int num) {
+		if (p2Ammo) {
+			p2Bullet[num].setX(p2.getX() + p2.getWidth() / 2 - p2Bullet[num].getWidth() / 2);
+			p2Bullet[num].setY(p2.getY() + p2.getHeight() / 2 - p2Bullet[num].getHeight() / 2);
+			p2Bullet[num].setFill(Color.BLACK);
+			p2Bullet[num].setStroke(Color.BLACK);
+			p2Bullet[num].setStrokeWidth(1);
+			rootGame.getChildren().add(p2Bullet[num]);
+			p2BulletTransition.setDuration(Duration.millis(500));
+			p2BulletTransition.setNode(p2Bullet[num]);
+			p2BulletTransition.setToX(p2DesiredX);
+			p2BulletTransition.play();
+		}
+		p2Ammo = false;
+	}
+
+	// P1 Bullet Recharge Bar Method
+	public static void p1BulletRecharge() {
+		p1AmmoFill[p1AmmoFillCounter].setX(p1BulletRecharge.getX());
+		p1AmmoFill[p1AmmoFillCounter].setY(p1BulletRecharge.getY());
+		p1AmmoFill[p1AmmoFillCounter].setFill(Color.CRIMSON);
+		p1AmmoLine[p1AmmoLineCounter].setTranslateX(0);
+		p1RechargeTransition.setDuration(Duration.millis(2000));
+		p1RechargeTransition.setNode(p1AmmoLine[p1AmmoLineCounter]);
+		p1RechargeTransition.setToX(p1BulletRecharge.getWidth());
+		p1RechargeTransition.play();
+
+	}
+
+	// P2 Bullet Recharge Bar Method
+	public static void p2BulletRecharge() {
+		p2AmmoFill[p2AmmoFillCounter]
+				.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth() - p2AmmoFill[p2AmmoFillCounter].getWidth());
+		p2AmmoFill[p2AmmoFillCounter].setY(p2BulletRecharge.getY());
+		p2AmmoFill[p2AmmoFillCounter].setFill(Color.ROYALBLUE);
+		p2AmmoLine[p2AmmoLineCounter].setTranslateX(0);
+		p2RechargeTransition.setDuration(Duration.millis(2000));
+		p2RechargeTransition.setNode(p2AmmoLine[p2AmmoLineCounter]);
+		p2RechargeTransition.setToX(-p2BulletRecharge.getWidth());
+		p2RechargeTransition.play();
+	}
+
+	// P1 Shield Recharge Bar Method
+	public static void p1ShieldRecharge() {
+		p1ShieldFill[p1ShieldFillCounter].setX(p1ShieldRecharge.getX());
+		p1ShieldFill[p1ShieldFillCounter].setY(p1ShieldRecharge.getY());
+		p1ShieldFill[p1ShieldFillCounter].setFill(Color.CRIMSON);
+		p1ShieldLine[p1ShieldLineCounter].setTranslateX(0);
+		p1ShieldRechargeTransition.setDuration(Duration.millis(5000));
+		p1ShieldRechargeTransition.setNode(p1ShieldLine[p1ShieldLineCounter]);
+		p1ShieldRechargeTransition.setToX(p1ShieldRecharge.getWidth());
+		p1ShieldRechargeTransition.play();
+
+	}
+
+	// P2 Shield Recharge Bar Method
+	public static void p2ShieldRecharge() {
+		p2ShieldFill[p2ShieldFillCounter].setX(
+				p2ShieldRecharge.getX() + p2ShieldRecharge.getWidth() - p2ShieldFill[p2ShieldFillCounter].getWidth());
+		p2ShieldFill[p2ShieldFillCounter].setY(p2ShieldRecharge.getY());
+		p2ShieldFill[p2ShieldFillCounter].setFill(Color.ROYALBLUE);
+		p2ShieldLine[p2ShieldLineCounter].setTranslateX(0);
+		p2ShieldRechargeTransition.setDuration(Duration.millis(2000));
+		p2ShieldRechargeTransition.setNode(p2ShieldLine[p2ShieldLineCounter]);
+		p2ShieldRechargeTransition.setToX(-p2ShieldRecharge.getWidth());
+		p2ShieldRechargeTransition.play();
+	}
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+}
