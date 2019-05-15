@@ -54,14 +54,23 @@ import java.io.*;
 
             //trying to check if the win time is faster than anything in the array
             do{
-                if(tempWinTime >organizeArrTemp[scoreIndex]){
-                    System.out.println("Your score is " + scoreIndex + " highest");
+                if(tempWinTime > organizeArrTemp[scoreIndex]){
+                    if(scoreIndex != 0) {
+                        organizeArrTemp[9] = 0;         //making the last element 0 so I can switch it with the second last element
+                        for (int s = 1; s <= arrScores.length; s++) {
+                            organizeArrTemp[organizeArrTemp.length - s] = organizeArrTemp[organizeArrTemp.length - s - 1];  //starting from the last element and assigning the element before that to the last
+                        }
+                        organizeArrTemp[scoreIndex] = tempWinTime;
+                    }else {
+                        System.out.println("Your score is highest");
+                    }
                 }
                 else{
                     System.out.println("not high enough");
                 }
                 scoreIndex++;
             }while(scoreIndex < organizeArrTemp.length && tempWinTime < organizeArrTemp[scoreIndex]);
+            
             //always have to close file if you open it
             reader.close();
 
