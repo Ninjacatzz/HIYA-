@@ -1,0 +1,29 @@
+import java.util.Formatter;
+
+import java.util.*;
+import java.io.*;
+import java.lang.*;
+
+public class createFile {
+    private Formatter x;
+
+    public void openFile(){
+        try{
+            x = new Formatter("test3.txt");
+        }
+        catch(Exception e){
+            System.out.println("you have arror");
+        }
+    }
+
+    public void addRecords(){
+        x.format("%s%s", "Marcus: ", "23:00");                      //%s determines the number of strings to attach
+        x.format("%s%s", "Seto: ", "32:28");
+
+    }
+
+    public void closeFile(){
+        x.close();
+    }
+
+}
