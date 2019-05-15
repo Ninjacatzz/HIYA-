@@ -40,8 +40,13 @@ import java.io.*;
             }
 
             Arrays.sort(arrScores);                // organizing the array
-            for(int i = 1; i<arrScores.length ; i++){
-                organizeArrTemp[i] = arrScores[arrScores.length-i];
+            for(int i = 0; i<arrScores.length ; i++){
+                if (i== 0){
+                    organizeArrTemp[i] = arrScores[arrScores.length-1];
+                }
+                else {
+                    organizeArrTemp[i] = arrScores[arrScores.length - i];
+                }
             }
 
 
