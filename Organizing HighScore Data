@@ -1,0 +1,65 @@
+import java.util.*;
+import java.io.*;
+ public class Main {
+
+
+    public static void main(String[] args) {
+        
+        File file = new File("test3.txt");
+
+        int tempWinTime = 6;
+        String tempWinner = "James";
+
+        int[] arrScores = new int[10];
+        int scoreIndex = 0;
+        int tempCheck = 0;
+        int highScore;
+        int reverse = 0;
+        int[] organizeArrTemp = new int[10];
+
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line = reader.readLine();
+            while(line != null)                                 // read the score file line by line
+            {
+                try {
+                    int highScoreList = Integer.parseInt(line.trim());
+                    arrScores[scoreIndex] = highScoreList;
+                    scoreIndex++;
+
+                } catch (NumberFormatException e1) {
+                    // ignore invalid scores
+                }
+                line = reader.readLine();
+            }
+
+            Arrays.sort(arrScores);                // organizing the array
+            for(int i = 1; i<arrScores.length ; i++){
+                organizeArrTemp[i] = arrScores[arrScores.length-i];
+            }
+
+
+            scoreIndex = 0; //reset to use score index again
+
+            //trying to check if the win time is faster than anything in the array
+            do{
+                if(tempWinTime >organizeArrTemp[scoreIndex]){
+                    System.out.println("Your score is " + scoreIndex + " highest");
+                }
+                else{
+                    System.out.println("not high enough");
+                }
+                scoreIndex++;
+            }while(scoreIndex < organizeArrTemp.length && tempWinTime < organizeArrTemp[scoreIndex]);
+            //always have to close file if you open it
+            reader.close();
+
+        } catch (IOException ex) {
+            System.err.println("ERROR reading scores from file");
+        }
+
+        //just printing the organized array to see if it worked
+        for(int j = 0; j< organizeArrTemp.length; j++) {
+            System.out.println(organizeArrTemp[j]);
+        }
