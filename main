@@ -1,5 +1,7 @@
 package application;
 
+import java.util.ArrayList;
+
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.text.Font;
@@ -47,19 +49,12 @@ public class Main extends Application {
 	// Player Labels
 	public static Label p1Name = new Label("");
 	public static Label p2Name = new Label("");
-
+	// Player Name Text Fields
 	public static TextField p1TF = new TextField();
 	public static TextField p2TF = new TextField();
-
+	// Player Name Inputs
 	public static String p1NameInput = new String();
 	public static String p2NameInput = new String();
-
-	// Bullet TranslateTransition
-	public static TranslateTransition p1BulletTransition = new TranslateTransition();
-	public static TranslateTransition p2BulletTransition = new TranslateTransition();
-	// Recharge Line TranslateTransition
-	public static TranslateTransition p1RechargeTransition = new TranslateTransition();
-	public static TranslateTransition p2RechargeTransition = new TranslateTransition();
 
 	// Player Move Boolean
 	public static boolean p1MoveUp = false;
@@ -67,56 +62,60 @@ public class Main extends Application {
 	public static boolean p2MoveUp = false;
 	public static boolean p2MoveDown = false;
 
-	// Animation Timer
-	public static AnimationTimer gameLoop;
-
-	// Bullet Desired X
-	public static double p1DesiredX = 700;
-	public static double p2DesiredX = -700;
-
 	// Player Movement Coordinates
 	public static double p1NewY;
 	public static double p2NewY;
-
-	// Bullet Arrays
-	public static Rectangle[] p1Bullet = new Rectangle[999];
-	public static Rectangle[] p2Bullet = new Rectangle[999];
-	// Bullet Array Counters
-	public static int p1BulletCounter = 0;
-	public static int p2BulletCounter = 0;
 
 	// Lives
 	public static int p1Lives = 3;
 	public static int p2Lives = 3;
 
-	// Recharge Bars
-	public static Rectangle p1Recharge = new Rectangle(100, 30, Color.TRANSPARENT);
-	public static Rectangle p2Recharge = new Rectangle(100, 30, Color.TRANSPARENT);
+	// Animation Timer
+	public static AnimationTimer gameLoop;
 
-	// Recharge Booleans
+	// Bullet TranslateTransition
+	public static TranslateTransition p1BulletTransition = new TranslateTransition();
+	public static TranslateTransition p2BulletTransition = new TranslateTransition();
+	// Bullet Recharge Line TranslateTransition
+	public static TranslateTransition p1RechargeTransition = new TranslateTransition();
+	public static TranslateTransition p2RechargeTransition = new TranslateTransition();
+
+	// Bullet Desired X
+	public static double p1DesiredX = 700;
+	public static double p2DesiredX = -700;
+
+	// Bullet Arrays
+	public static Rectangle[] p1Bullet = new Rectangle[999];
+	public static Rectangle[] p2Bullet = new Rectangle[999];
+	
+	// Bullet Array Counters
+	public static int p1BulletCounter = 0;
+	public static int p2BulletCounter = 0;
+
+	// Bullet Recharge Bars
+	public static Rectangle p1BulletRecharge = new Rectangle(100, 30, Color.TRANSPARENT);
+	public static Rectangle p2BulletRecharge = new Rectangle(100, 30, Color.TRANSPARENT);
+
+	// Bullet Recharge Booleans
 	public static boolean p1Ammo = true;
 	public static boolean p2Ammo = true;
 
-	// Recharge Fillings
+	// Bullet Recharge Fillings
 	public static Rectangle[] p1AmmoFill = new Rectangle[999];
 	public static Rectangle[] p2AmmoFill = new Rectangle[999];
-	// Recharge Fillings Counters
+	// Bullet Recharge Fillings Counters
 	public static int p1AmmoFillCounter = 0;
 	public static int p2AmmoFillCounter = 0;
 
-	// Recharge Filling Line
+	// Bullet Recharge Filling Line
 	public static Line[] p1AmmoLine = new Line[999];
 	public static Line[] p2AmmoLine = new Line[999];
-	// Recharge Filling Line Counter
+	// Bullet Recharge Filling Line Counter
 	public static int p1AmmoLineCounter = 0;
 	public static int p2AmmoLineCounter = 0;
 
 	// Pause Boolean
 	public static boolean pause = false;
-
-	// Pause Bars
-	public static Rectangle pauseBar1 = new Rectangle(50, 200, Color.GREY);
-	public static Rectangle pauseBar2 = new Rectangle(50, 200, Color.GREY);
 
 	// Pause Menu
 	public static Text pauseText = new Text("PAUSE");
@@ -128,18 +127,6 @@ public class Main extends Application {
 
 	// Winner
 	public static String winner = new String("");
-
-	// Power Ups
-	public static Rectangle[] livePowerUp = new Rectangle[999];
-	public static int livePowerUpCounter = 0;
-	public static Rectangle[] shieldPowerUp = new Rectangle[999];
-	public static int shieldPowerUpCounter = 0;
-	public static Rectangle[] shield = new Rectangle[999];
-	public static int shieldCounter = 0;
-	public static int shieldOwner = -1;
-	public static Rectangle[] ammoPowerUp = new Rectangle[999];
-	public static int ammoPowerUpCounter = 0;
-	public static int powerUpRandomizer = 0;
 
 	// Timer Variables
 	public static Timeline animation;
@@ -363,9 +350,10 @@ public class Main extends Application {
 		Text instructionsTitle = new Text();
 		instructionsTitle.setText("INSTRUCTIONS");
 		instructionsTitle.setFont(Font.font("verdana", 40));
-		instructionsTitle.setY(55);
 		instructionsTitle.setX(295);
+		instructionsTitle.setY(55);
 		rootI.getChildren().add(instructionsTitle);
+				
 		// P1 Instructions
 		Text p1Instructions = new Text("P1:");
 		p1Instructions.setFont(Font.font("verdana", 20));
@@ -377,8 +365,8 @@ public class Main extends Application {
 		Text p1TextInstructionsLine2 = new Text("Press S to move down.");
 		Text p1TextInstructions3 = new Text("Press D to shoot.");
 		p1TextInstructions.getChildren().addAll(p1TextInstructionsLine1, p1TextInstructionsLine2, p1TextInstructions3);
-		p1TextInstructions.setLayoutY(95);
 		p1TextInstructions.setLayoutX(310);
+		p1TextInstructions.setLayoutY(95);
 		rootI.getChildren().add(p1TextInstructions);
 
 		// P2 Instructions
@@ -394,8 +382,8 @@ public class Main extends Application {
 		Text p2TextInstructionsLine3 = new Text("Press LEFT Arrow to shoot.");
 		p2TextInstructions.getChildren().addAll(p2TextInstructionsLine1, p2TextInstructionsLine2,
 				p2TextInstructionsLine3);
-		p2TextInstructions.setLayoutY(225);
 		p2TextInstructions.setLayoutX(310);
+		p2TextInstructions.setLayoutY(225);
 		rootI.getChildren().add(p2TextInstructions);
 
 		// Other Instructions
@@ -406,10 +394,11 @@ public class Main extends Application {
 		rootI.getChildren().add(otherInstructions);
 		// Other Instructions Text
 		VBox otherTextInstructions = new VBox(20);
-		Text pauseInstructions = new Text("Press P to pause.");
-		otherTextInstructions.getChildren().addAll(pauseInstructions);
-		otherTextInstructions.setLayoutY(370);
+		Text pauseInstructionsLine1 = new Text("Press P to pause.");
+		Text pauseInstructionsLine2 = new Text("There is no 3 second break after resuming the game.");
+		otherTextInstructions.getChildren().addAll(pauseInstructionsLine1, pauseInstructionsLine2);
 		otherTextInstructions.setLayoutX(310);
+		otherTextInstructions.setLayoutY(370);
 		rootI.getChildren().add(otherTextInstructions);
 
 		// Back Button (Instructions to Title Page)
@@ -445,7 +434,7 @@ public class Main extends Application {
 			p1Bullet[i] = new Rectangle(30, 30);
 		}
 		// P2 Bullet Array Initialization
-		for (int j = 0; j < p1Bullet.length; j++) {
+		for (int j = 0; j < p2Bullet.length; j++) {
 			p2Bullet[j] = new Rectangle(30, 30);
 		}
 
@@ -455,7 +444,7 @@ public class Main extends Application {
 		}
 
 		// P2 Bullet Ammo Fill Array Initialization
-		for (int i = 0; i < p1AmmoFill.length; i++) {
+		for (int i = 0; i < p2AmmoFill.length; i++) {
 			p2AmmoFill[i] = new Rectangle(1, 30);
 		}
 
@@ -465,20 +454,8 @@ public class Main extends Application {
 		}
 
 		// P2 Ammo Fill Line Array Initialization
-		for (int i = 0; i < p1AmmoLine.length; i++) {
+		for (int i = 0; i < p2AmmoLine.length; i++) {
 			p2AmmoLine[i] = new Line(750, 465, 750, 495);
-		}
-
-		// Power Up Initializations
-		for (int i = 0; i < livePowerUp.length; i++) {
-			livePowerUp[i] = new Rectangle(30, 30, Color.GOLD);
-			shieldPowerUp[i] = new Rectangle(30, 30, Color.LIGHTBLUE);
-			ammoPowerUp[i] = new Rectangle(30, 30, Color.ORANGE);
-		}
-
-		// Shield Initialization
-		for (int i = 0; i < shield.length; i++) {
-			shield[i] = new Rectangle(10, 60, Color.GREY);
 		}
 
 		// Key Numbers
@@ -589,20 +566,18 @@ public class Main extends Application {
 		rootGame.getChildren().add(p2Lives3);
 
 		// P1 Recharge Bar
-		p1Recharge.setX(map.getX());
-		p1Recharge.setY(p1Lives1.getY() + p1Lives1.getHeight() + 5);
-		p1Recharge.setFill(Color.TRANSPARENT);
-		p1Recharge.setStroke(Color.BLACK);
-		p1Recharge.setStrokeWidth(1);
-		rootGame.getChildren().add(p1Recharge);
+		p1BulletRecharge.setX(map.getX());
+		p1BulletRecharge.setY(p1Lives1.getY() + p1Lives1.getHeight() + 5);
+		p1BulletRecharge.setStroke(Color.BLACK);
+		p1BulletRecharge.setStrokeWidth(1);
+		rootGame.getChildren().add(p1BulletRecharge);
 
 		// P2 Recharge Bar
-		p2Recharge.setX(p2Lives3.getX());
-		p2Recharge.setY(p2Lives3.getY() + p2Lives3.getHeight() + 5);
-		p2Recharge.setFill(Color.TRANSPARENT);
-		p2Recharge.setStroke(Color.BLACK);
-		p2Recharge.setStrokeWidth(1);
-		rootGame.getChildren().add(p2Recharge);
+		p2BulletRecharge.setX(p2Lives3.getX());
+		p2BulletRecharge.setY(p2Lives3.getY() + p2Lives3.getHeight() + 5);
+		p2BulletRecharge.setStroke(Color.BLACK);
+		p2BulletRecharge.setStrokeWidth(1);
+		rootGame.getChildren().add(p2BulletRecharge);
 
 		// Event Handler Key Released
 		sceneGame.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
@@ -686,6 +661,27 @@ public class Main extends Application {
 				}
 
 			}
+			// Player 1 Shield Event Handler
+			if (event.getCode() == KeyCode.A) {
+				try {
+					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+						
+					}
+				} catch (IllegalArgumentException e) {
+				}
+
+			}
+			// Player 2 Shield Event Handler
+			if (event.getCode() == KeyCode.RIGHT) {
+				try {
+					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
+						
+					}
+				} catch (IllegalArgumentException e) {
+				}
+
+			}
+
 			// Pause Button
 			if (event.getCode() == KeyCode.P) {
 				if (pause == false) {
@@ -769,8 +765,8 @@ public class Main extends Application {
 			rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
 			p2AmmoFillCounter++;
 
-			p1AmmoFill[p1AmmoFillCounter].setX(p1Recharge.getX());
-			p2AmmoFill[p2AmmoFillCounter].setX(p2Recharge.getX() + p2Recharge.getWidth());
+			p1AmmoFill[p1AmmoFillCounter].setX(p1BulletRecharge.getX());
+			p2AmmoFill[p2AmmoFillCounter].setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
 			p1Ammo = true;
 			p2Ammo = true;
 			if (p1Lives == 0) {
@@ -859,11 +855,11 @@ public class Main extends Application {
 					rootGame.getChildren().remove(p2Lives1);
 				}
 
-				// P1 Recharge Animation
+				// P1 Bullet Recharge Animation
 				p1AmmoFill[p1AmmoFillCounter].setWidth(p1AmmoLine[p1AmmoLineCounter].getTranslateX());
-				if (p1AmmoFill[p1AmmoFillCounter].getWidth() == p1Recharge.getWidth()) {
+				if (p1AmmoFill[p1AmmoFillCounter].getWidth() == p1BulletRecharge.getWidth()) {
 					rootGame.getChildren().remove(p1AmmoFill[p1AmmoFillCounter]);
-					p1AmmoLine[p1AmmoLineCounter].setStartX(p1Recharge.getX());
+					p1AmmoLine[p1AmmoLineCounter].setStartX(p1BulletRecharge.getX());
 					p1AmmoLine[p1AmmoLineCounter].setEndX(p1AmmoLine[p1AmmoLineCounter].getStartX());
 					rootGame.getChildren().remove(p1AmmoLine[p1AmmoLineCounter]);
 					p1AmmoFillCounter++;
@@ -871,13 +867,13 @@ public class Main extends Application {
 					p1Ammo = true;
 				}
 
-				// P2 Recharge Animation
+				// P2 Bullet Recharge Animation
 				p2AmmoFill[p2AmmoFillCounter].setWidth(Math.abs(p2AmmoLine[p2AmmoLineCounter].getTranslateX()));
-				p2AmmoFill[p2AmmoFillCounter].setX(
-						p2Recharge.getX() + p2Recharge.getWidth() + p2AmmoLine[p2AmmoLineCounter].getTranslateX());
-				if (p2AmmoFill[p2AmmoFillCounter].getWidth() == p2Recharge.getWidth()) {
+				p2AmmoFill[p2AmmoFillCounter].setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth()
+						+ p2AmmoLine[p2AmmoLineCounter].getTranslateX());
+				if (p2AmmoFill[p2AmmoFillCounter].getWidth() == p2BulletRecharge.getWidth()) {
 					rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
-					p2AmmoLine[p2AmmoLineCounter].setStartX(p2Recharge.getX() + p2Recharge.getWidth());
+					p2AmmoLine[p2AmmoLineCounter].setStartX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
 					p2AmmoLine[p2AmmoLineCounter].setEndX(p2AmmoLine[p2AmmoLineCounter].getStartX());
 					rootGame.getChildren().remove(p2AmmoLine[p2AmmoLineCounter]);
 					p2AmmoFillCounter++;
@@ -913,117 +909,6 @@ public class Main extends Application {
 						p2.setY(p2NewY);
 					}
 				}
-
-				// Power Up Randomizer
-//				if (winningTime % 5 == 0 && winningTime != 0) {
-//					int counter = 0;
-//					int passedTime = 0;
-//					if (counter == 0) {
-//						powerUpRandomizer = (int) (Math.random() * 3);
-//						System.out.println(powerUpRandomizer);
-//						counter++;
-//						passedTime = winningTime;
-//						if (powerUpRandomizer == 0) {
-//							livePowerUp[livePowerUpCounter].setX(450 - livePowerUp[livePowerUpCounter].getWidth() / 2);
-//							if (Math.random() * map.getHeight() + map.getY() < map.getHeight() + map.getY()) {
-//								livePowerUp[livePowerUpCounter].setY(Math.random() * map.getHeight() + map.getY());
-//							}
-//							rootGame.getChildren().add(livePowerUp[livePowerUpCounter]);
-//						}
-//						if (powerUpRandomizer == 1) {
-//							shieldPowerUp[shieldPowerUpCounter]
-//									.setX(450 - shieldPowerUp[shieldPowerUpCounter].getWidth() / 2);
-//							if (Math.random() * map.getHeight() + map.getY() < map.getHeight() + map.getY()) {
-//								shieldPowerUp[shieldPowerUpCounter].setY(Math.random() * map.getHeight() + map.getY());
-//							}
-//							rootGame.getChildren().add(shieldPowerUp[shieldPowerUpCounter]);
-//						}
-//						if (powerUpRandomizer == 2) {
-//							ammoPowerUp[ammoPowerUpCounter].setX(450 - ammoPowerUp[ammoPowerUpCounter].getWidth() / 2);
-//							if (Math.random() * map.getHeight() + map.getY() < map.getHeight() + map.getY()) {
-//								ammoPowerUp[ammoPowerUpCounter].setY(Math.random() * map.getHeight() + map.getY());
-//							}
-//							rootGame.getChildren().add(ammoPowerUp[ammoPowerUpCounter]);
-//						}
-//					}
-//					if (passedTime + 1 == winningTime) {
-//						counter--;
-//					}
-//				}
-//				
-				// Live Power Up Collision Detection
-//				if (p1Bullet[p1BulletCounter].getBoundsInParent()
-//						.intersects(livePowerUp[livePowerUpCounter].getBoundsInParent())
-//						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
-//					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
-//					p1BulletCounter++;
-//					rootGame.getChildren().remove(livePowerUp[livePowerUpCounter]);
-//					livePowerUpCounter++;
-//					if(p1Lives + 1 <= 3) {
-//						p1Lives++;
-//					}	
-//				}
-//				if (p2Bullet[p2BulletCounter].getBoundsInParent()
-//						.intersects(livePowerUp[livePowerUpCounter].getBoundsInParent())
-//						&& p2Bullet[p2BulletCounter].getTranslateX() != 0.0) {
-//					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
-//					p2BulletCounter++;
-//					rootGame.getChildren().remove(livePowerUp[livePowerUpCounter]);
-//					livePowerUpCounter++;
-//					if(p2Lives + 1 <= 3) {
-//						p2Lives++;
-//					}
-//				}
-//				
-//				// Shield Power Up Collision Detection
-//				if (p1Bullet[p1BulletCounter].getBoundsInParent()
-//						.intersects(shieldPowerUp[shieldPowerUpCounter].getBoundsInParent())
-//						&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
-//					rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
-//					p1BulletCounter++;
-//					rootGame.getChildren().remove(shieldPowerUp[shieldPowerUpCounter]);
-//					shieldPowerUpCounter++;
-//					shieldOwner = 1;	
-//				}
-//				if (p2Bullet[p2BulletCounter].getBoundsInParent()
-//						.intersects(shieldPowerUp[shieldPowerUpCounter].getBoundsInParent())
-//						&& p2Bullet[p2BulletCounter].getTranslateX() != 0.0) {
-//					rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
-//					p2BulletCounter++;
-//					rootGame.getChildren().remove(shieldPowerUp[shieldPowerUpCounter]);
-//					shieldPowerUpCounter++;
-//					shieldOwner = 2;
-//				}
-//				
-//				// Shield Logic
-//				if(shieldOwner == 1) {
-//					shield[shieldCounter].setX(p1.getX() + p1.getWidth() + 15);
-//					shield[shieldCounter].setY(p1.getY() + p1.getHeight()/2 - shield[shieldCounter].getHeight()/2);
-//					rootGame.getChildren().add(shield[shieldCounter]);
-//					if (p2Bullet[p2BulletCounter].getBoundsInParent()
-//							.intersects(shield[shieldCounter].getBoundsInParent())
-//							&& p2Bullet[p2BulletCounter].getTranslateX() != 0.0) {
-//						rootGame.getChildren().remove(p2Bullet[p2BulletCounter]);
-//						p2BulletCounter++;
-//						rootGame.getChildren().remove(shield[shieldCounter]);
-//						shieldCounter++;
-//						shieldOwner = -1;
-//					}
-//				}
-//				else if(shieldOwner == 2) {
-//					shield[shieldCounter].setX(p2.getX() + shield[shieldCounter].getWidth() + 15);
-//					shield[shieldCounter].setY(p2.getY() + p2.getHeight()/2 - shield[shieldCounter].getHeight()/2);
-//					rootGame.getChildren().add(shield[shieldCounter]);
-//					if (p1Bullet[p1BulletCounter].getBoundsInParent()
-//							.intersects(shield[shieldCounter].getBoundsInParent())
-//							&& p1Bullet[p1BulletCounter].getTranslateX() != 0.0) {
-//						rootGame.getChildren().remove(p1Bullet[p1BulletCounter]);
-//						p1BulletCounter++;
-//						rootGame.getChildren().remove(shield[shieldCounter]);
-//						shieldCounter++;
-//						shieldOwner = 0;
-//					}
-//				}
 
 				// Game Over
 				if (p1Lives == 0 || p2Lives == 0) {
@@ -1069,8 +954,8 @@ public class Main extends Application {
 						rootGame.getChildren().remove(p2AmmoFill[p2AmmoFillCounter]);
 						p2AmmoFillCounter++;
 
-						p1AmmoFill[p1AmmoFillCounter].setX(p1Recharge.getX());
-						p2AmmoFill[p2AmmoFillCounter].setX(p2Recharge.getX() + p2Recharge.getWidth());
+						p1AmmoFill[p1AmmoFillCounter].setX(p1BulletRecharge.getX());
+						p2AmmoFill[p2AmmoFillCounter].setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
 						p1Ammo = true;
 						p2Ammo = true;
 						if (p1Lives == 0) {
@@ -1122,7 +1007,7 @@ public class Main extends Application {
 		}
 		p1Ammo = false;
 	}
-
+	
 	// P2 Bullet Method
 	public static void p2Bullet(int num) {
 		if (p2Ammo) {
@@ -1140,32 +1025,32 @@ public class Main extends Application {
 		p2Ammo = false;
 	}
 
-	// P1 Recharge Bar Method
+	// P1 Bullet Recharge Bar Method
 	public static void p1BulletRecharge() {
-		p1AmmoFill[p1AmmoFillCounter].setX(p1Recharge.getX());
-		p1AmmoFill[p1AmmoFillCounter].setY(p1Recharge.getY());
+		p1AmmoFill[p1AmmoFillCounter].setX(p1BulletRecharge.getX());
+		p1AmmoFill[p1AmmoFillCounter].setY(p1BulletRecharge.getY());
 		p1AmmoFill[p1AmmoFillCounter].setFill(Color.CRIMSON);
 		p1AmmoLine[p1AmmoLineCounter].setTranslateX(0);
 		p1RechargeTransition.setDuration(Duration.millis(2000));
 		p1RechargeTransition.setNode(p1AmmoLine[p1AmmoLineCounter]);
-		p1RechargeTransition.setToX(p1Recharge.getWidth());
+		p1RechargeTransition.setToX(p1BulletRecharge.getWidth());
 		p1RechargeTransition.play();
 
 	}
 
-	// P2 Recharge Bar Method
+	// P2 Bullet Recharge Bar Method
 	public static void p2BulletRecharge() {
 		p2AmmoFill[p2AmmoFillCounter]
-				.setX(p2Recharge.getX() + p2Recharge.getWidth() - p2AmmoFill[p2AmmoFillCounter].getWidth());
-		p2AmmoFill[p2AmmoFillCounter].setY(p2Recharge.getY());
+				.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth() - p2AmmoFill[p2AmmoFillCounter].getWidth());
+		p2AmmoFill[p2AmmoFillCounter].setY(p2BulletRecharge.getY());
 		p2AmmoFill[p2AmmoFillCounter].setFill(Color.ROYALBLUE);
 		p2AmmoLine[p2AmmoLineCounter].setTranslateX(0);
 		p2RechargeTransition.setDuration(Duration.millis(2000));
 		p2RechargeTransition.setNode(p2AmmoLine[p2AmmoLineCounter]);
-		p2RechargeTransition.setToX(-p2Recharge.getWidth());
+		p2RechargeTransition.setToX(-p2BulletRecharge.getWidth());
 		p2RechargeTransition.play();
 	}
-
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
