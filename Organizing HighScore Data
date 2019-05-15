@@ -4,6 +4,11 @@ import java.io.*;
 
 
     public static void main(String[] args) {
+    
+//        readFile r = new readFile();
+//        r.openFile();
+//        r.readFile();
+//        r.closeFile();
         
         File file = new File("test3.txt");
 
