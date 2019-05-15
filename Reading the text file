@@ -1,0 +1,31 @@
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+
+public class readFile {
+
+    private Scanner x;
+
+    public void openFile(){
+        try{
+            x = new Scanner(new File("test3.txt"));
+        }
+        catch(Exception e){
+            System.out.println(" error");
+        }
+    }
+
+    public void readFile(){
+        while(x.hasNext()){
+            String a = x.next();
+            String b = x.next();
+
+            System.out.printf("%s%s\n", a, b);
+        }
+    }
+
+    public void closeFile(){
+        x.close();
+    }
+
+}
