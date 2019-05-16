@@ -371,7 +371,8 @@ public class Main extends Application {
         backButtonHS.setLayoutY(40 - backButtonHS.getPrefWidth() / 2);
         // Back Button (High Score to Title Page) Event Handler
         backButtonHS.setOnAction(event -> primaryStage.setScene(mainScene));
-        // Button Dimming
+        // Button Dimming using CSS to change the colour of the button to slightly darker when the users
+        // cursor hovers over the button
         backButtonHS.setStyle("-fx-background-color: #3CAEA3");
         backButtonHS.setOnMouseEntered(event -> backButtonHS.setStyle("-fx-background-color: #379F95"));
         backButtonHS.setOnMouseExited(event -> backButtonHS.setStyle("-fx-background-color: #3CAEA3"));
@@ -386,6 +387,7 @@ public class Main extends Application {
         highLabel.setLayoutX(290);
         highLabel.setLayoutY(290);
         highscoresButton.setStyle("-fx-background-color: #EE4540");
+        // Same function as the back button dimming
         highscoresButton.setOnMouseEntered(event -> highscoresButton.setStyle("-fx-background-color: #D93F3B"));
         highscoresButton.setOnMouseExited(event -> highscoresButton.setStyle("-fx-background-color: #EE4540"));
         // High Score Button Event Handler
