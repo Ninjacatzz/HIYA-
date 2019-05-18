@@ -147,6 +147,10 @@ public class Main extends Application {
 			time.setLayoutY(15);
 			rootGame.getChildren().add(time);
 			timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> timeLabel()));
+			/*
+			 *  Since the game ends when one player is out of lives, not when a timer runs out, the timer
+			 *  runs forever. 
+			 */
 			timer.setCycleCount(Timeline.INDEFINITE);
 			timer.play();
 		}
@@ -159,20 +163,32 @@ public class Main extends Application {
 		private void timeLabel() {
 			if (secondsPass >= 0) {
 				secondsPass++;
+				// This blocks sets the front portion of the label to how many minutes have gone buy.
 				if (mins < 10) {
 					tempMins = "0" + mins;
 					labelString = tempMins + ":" + secondsPass;
 				}
+				/*
+				 * This blocks sets sets the back portion of the label to how many seconds have passed. Once 
+				 * time has reached 2 digits, this code does not need to run since there is no 0 in front of 
+				 * 2 digit clocks in a digital clock. 
+				 */
 				if (secondsPass < 10) {
 					tempSecs = "0" + secondsPass;
 					labelString = tempMins + ":" + tempSecs;
 				}
+				// This increments the number of minutes and resets secondsPass if 60 seconds has passed. 
 				if (secondsPass % 60 == 0) {
 					secondsPass = 0;
 					mins++;
 					tempMins = mins + "";
 				}
 				time.setText(labelString);
+				/*
+				 *  Since secondsPass is a local variable, we created winningTime so that we could access 
+				 *  the time outside of the method since it is private. 
+				 */
+				
 				winningTime = secondsPass;
 			}
 		}
