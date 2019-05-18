@@ -4,60 +4,71 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-
-import javafx.animation.*;
-import javafx.application.Application;
+import javafx.animation.TranslateTransition;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
 import javafx.scene.text.Font;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.application.Application;
+import javafx.animation.AnimationTimer;
 
 public class Main extends Application {
-	// Map
+	// Creates the Map for the Game Scene.
 	public static Rectangle map = new Rectangle(600, 350);
-	// P1
+	// Creates Player 1 for the Game Scene.
 	public static Rectangle p1 = new Rectangle(50, 50);
-	// P2
+	// Creates Player 2 for the Game Scene.
 	public static Rectangle p2 = new Rectangle(50, 50);
 
-	// Title Pane and Scene
+	// Title Screen Pane and Scene.
 	public static Pane rootTitle;
 	public static Scene mainScene;
 
-	// High Score Pane and Scene
+	// High Score Pane and Scene.
 	public static Pane rootHS;
 	public static Scene sceneHS;
 
-	// Instructions Pane and Scene
+	// Instructions Pane and Scene.
 	public static Pane rootI;
 	public static Scene sceneI;
 
-	// Game Pane and Scene
+	// Game Pane and Scene.
 	public static Pane rootGame;
 	public static Scene sceneGame;
 
-	// Player Name Pane and Scene
+	// Player Name Pane and Scene. This scene is where Players input their names for
+	// high score.
 	public static Pane rootPlayerName;
 	public static Scene scenePlayerName;
-	// Player Labels
+	// Player Name Display Labels
 	public static Label p1Name = new Label("");
 	public static Label p2Name = new Label("");
 	// Player Name Text Fields
 	public static TextField p1TF = new TextField();
 	public static TextField p2TF = new TextField();
-	// Player Name Inputs
+	// Player Name Input Strings
 	public static String p1NameInput = new String();
 	public static String p2NameInput = new String();
+	// Player Name Error Labels and Buttons
+	public static Label emptyName;
+	public static Label sameName;
+	public static Label samePerson;
+	public static Button yesSamePerson;
+	public static Button noSamePerson;
+	public static Label changeName;
 
 	// Player Move Boolean
 	public static boolean p1MoveUp = false;
@@ -87,9 +98,8 @@ public class Main extends Application {
 	public static double p1DesiredX = 700;
 	public static double p2DesiredX = -700;
 
-	// P1 Bullet
+	// Bullets
 	public static Rectangle p1Bullet = new Rectangle(30, 30, Color.GREY);
-	// P2 Bullet
 	public static Rectangle p2Bullet = new Rectangle(30, 30, Color.GREY);
 
 	// Bullet Recharge Bars
@@ -122,8 +132,10 @@ public class Main extends Application {
 	// Winner
 	public static String winner = new String("");
 
+	// Text File Readers
 	public static FileReader fileReader;
 	public static BufferedReader reader;
+	// Text File Writers
 	public static FileWriter fileWriter;
 	public static BufferedWriter writer;
 
@@ -133,7 +145,7 @@ public class Main extends Application {
 	public static clock[] timer = new clock[999];
 	public static int winningTime;
 
-	// Timer loop
+	// Timer loop !NEEDS MORE DETAIL!
 	public class clock extends Pane {
 		int secondsPass = 0;
 		String S = " ";
@@ -175,34 +187,61 @@ public class Main extends Application {
 		}
 	}
 
-	public static String highScoreString = "";
+	// This int will contain the score from HighScore.txt
 	public static int highScoreInt = 0;
-	public static Text currentHighScore;
+	public static String highScoreIntToString = "";
+	// This string will contain the name of the high scorer
+	public static String highScoreName = "";
 
+	public static Text highScoreNameIntro;
+	public static Text highScoreIntLine;
+	public static Text highScoreNameLine;
+	public static Text highScoreIntIntro;
+	public static Text noHighScore;
+
+	// This is the method that reads the text file for the high score.
 	public static void fileReader() throws Exception {
 		fileReader = new FileReader("HighScore.txt");
 		reader = new BufferedReader(fileReader);
 		String line = reader.readLine();
-		highScoreString = line;
 		String tempString = new String();
+		/*
+		 * This code reads the String from the text file and "pulls" out the numbers. It
+		 * goes through the String and reads each characters, if the character is a
+		 * number, (ie between ASCII values of 48 and 57 inclusive), then it will take
+		 * that char and add it to the end of tempString. Afterwards, the String that
+		 * contains the number/score is parsed into an integer primitive. This int is
+		 * then used to compare the time taken by the current winner to determine if a
+		 * new high score has been reached.
+		 */
+		boolean colonCheck = false;
 		if (line != null) {
+			highScoreName = "";
 			for (int i = 0; i < line.length(); i++) {
-				if ((int) line.charAt(i) >= 48 && (int) line.charAt(i) <= 57) {
+				if ((int) line.charAt(i) == 58) {
+					colonCheck = true;
+				}
+				if (colonCheck == false) {
 					String tempChar = String.valueOf(line.charAt(i));
-					tempString = tempString + "" + tempChar;
+					highScoreName = highScoreName + "" + tempChar;
+				}
+				if (colonCheck == true) {
+					if ((int) line.charAt(i) >= 48 && (int) line.charAt(i) <= 57) {
+						String tempChar = String.valueOf(line.charAt(i));
+						tempString = tempString + "" + tempChar;
+					}
 				}
 			}
-		}
-
-		try {
-			if (line != null) {
-				highScoreInt = Integer.parseInt(tempString.trim());
-			}
-		} catch (Exception e) {
+			highScoreInt = Integer.parseInt(tempString.trim());
+			highScoreIntToString = tempString;
 		}
 		reader.close();
 	}
 
+	/*
+	 * This code takes the current winner and the time taken to do so and writes it
+	 * to HighScore.txt. This method is only called when winningTime > highScoreInt
+	 */
 	public static void fileWriter() throws Exception {
 		fileWriter = new FileWriter("HighScore.txt");
 		writer = new BufferedWriter(fileWriter);
@@ -219,98 +258,6 @@ public class Main extends Application {
 		primaryStage.setScene(mainScene);
 		primaryStage.show();
 
-		// Game Scene and Root
-		rootGame = new Pane();
-		sceneGame = new Scene(rootGame, 900, 600);
-
-		// Start Button
-		Button startButton = new Button("START");
-		final Label startLabel = new Label();
-		startButton.setPrefWidth(165);
-		startButton.setPrefHeight(40);
-		startButton.setLayoutX(450 - startButton.getPrefWidth() / 2);
-		startButton.setLayoutY(350 - startButton.getPrefWidth() / 2);
-		startLabel.setLayoutX(290);
-		startLabel.setLayoutY(290);
-		startButton.setStyle("-fx-background-color: #3CAEA3");
-		rootTitle.getChildren().add(startButton);
-		// changing color when hovering over button
-		startButton.setOnMouseEntered(event -> startButton.setStyle("-fx-background-color: #379F95"));
-		startButton.setOnMouseExited(event -> startButton.setStyle("-fx-background-color: #3CAEA3"));
-		// Start Button Event Handler
-		startButton.setOnAction(event -> {
-			primaryStage.setScene(scenePlayerName);
-		});
-
-		// Player Name Scene and Root
-		rootPlayerName = new Pane();
-		scenePlayerName = new Scene(rootPlayerName, 900, 600);
-		Rectangle p1Model = new Rectangle(50, 50, Color.CRIMSON);
-		p1Model.setX(225 - p1Model.getWidth() / 2);
-		p1Model.setY(300 - p1Model.getHeight() / 2);
-		p1Model.setStroke(Color.BLACK);
-		p1Model.setStrokeWidth(1);
-		rootPlayerName.getChildren().add(p1Model);
-		Label p1Label = new Label("P1");
-		p1Label.setLayoutX(p1Model.getX() + 18);
-		p1Label.setLayoutY(p1Model.getY() + 18);
-		rootPlayerName.getChildren().add(p1Label);
-		Rectangle p2Model = new Rectangle(50, 50, Color.ROYALBLUE);
-		p2Model.setX(675 - p2Model.getWidth() / 2);
-		p2Model.setY(300 - p2Model.getHeight() / 2);
-		p2Model.setStroke(Color.BLACK);
-		p2Model.setStrokeWidth(1);
-		rootPlayerName.getChildren().add(p2Model);
-		Label p2Label = new Label("P2");
-		p2Label.setLayoutX(p2Model.getX() + 18);
-		p2Label.setLayoutY(p2Model.getY() + 18);
-		rootPlayerName.getChildren().add(p2Label);
-		p1TF.setPrefColumnCount(10);
-		p1TF.setLayoutX(p1Model.getX() - 35);
-		p1TF.setLayoutY(p1Model.getY() + 65);
-		rootPlayerName.getChildren().add(p1TF);
-		p1TF.setOnAction(event -> {
-			p1NameInput = p1TF.getCharacters().toString();
-			p1Name.setText(p1NameInput);
-		});
-		p2TF.setPrefColumnCount(10);
-		p2TF.setLayoutX(p2Model.getX() - 35);
-		p2TF.setLayoutY(p2Model.getY() + 65);
-		rootPlayerName.getChildren().add(p2TF);
-		p2TF.setOnAction(event -> {
-			p2NameInput = p2TF.getCharacters().toString();
-			p2Name.setText(p2NameInput);
-		});
-		Button startGameButton = new Button("BEGIN");
-		startGameButton.setPrefWidth(165);
-		startGameButton.setPrefHeight(40);
-		startGameButton.setLayoutX(450 - startGameButton.getPrefWidth() / 2);
-		startGameButton.setLayoutY(400 - startGameButton.getPrefHeight() / 2);
-		rootPlayerName.getChildren().add(startGameButton);
-		startGameButton.setOnAction(event -> {
-			primaryStage.setScene(sceneGame);
-			gameLoop.start();
-			timer[clockCounter] = new clock();
-			rootGame.getChildren().add(timer[clockCounter]);
-			p1NameInput = p1TF.getCharacters().toString();
-			p1Name.setText(p1NameInput);
-			p2NameInput = p2TF.getCharacters().toString();
-			p2Name.setText(p2NameInput);
-		});
-		// Back Button (Player Name to Title Page)
-		Button backButtonPN = new Button("<-");
-		rootPlayerName.getChildren().add(backButtonPN);
-		backButtonPN.setPrefWidth(60);
-		backButtonPN.setPrefHeight(40);
-		backButtonPN.setLayoutX(50 - backButtonPN.getPrefWidth() / 2);
-		backButtonPN.setLayoutY(40 - backButtonPN.getPrefWidth() / 2);
-		// Back Button (High Score to Title Page) Event Handler
-		backButtonPN.setOnAction(event -> primaryStage.setScene(mainScene));
-		// Button Dimming
-		backButtonPN.setStyle("-fx-background-color: #3CAEA3");
-		backButtonPN.setOnMouseEntered(event -> backButtonPN.setStyle("-fx-background-color: #379F95"));
-		backButtonPN.setOnMouseExited(event -> backButtonPN.setStyle("-fx-background-color: #3CAEA3"));
-
 		// Title
 		Text title = new Text("HIYA!");
 		title.setFont(Font.font("impact", 80));
@@ -324,35 +271,294 @@ public class Main extends Application {
 		creators.setX(316);
 		rootTitle.getChildren().add(creators);
 
+		// Start Button (Title Scene to Player Name Scene)
+		Button startButton = new Button("START");
+		final Label startLabel = new Label();
+		startButton.setPrefWidth(165);
+		startButton.setPrefHeight(40);
+		startButton.setLayoutX(450 - startButton.getPrefWidth() / 2);
+		/*
+		 * Allows us to take the "key pixel" we want make that the center of the button.
+		 * Makes positioning nodes more intuitive
+		 */
+		startButton.setLayoutY(350 - startButton.getPrefWidth() / 2);
+		startLabel.setLayoutX(290);
+		startLabel.setLayoutY(290);
+		startButton.setStyle("-fx-background-color: #3CAEA3");
+		rootTitle.getChildren().add(startButton);
+		// Dims the button when hovering over it.
+		startButton.setOnMouseEntered(event -> startButton.setStyle("-fx-background-color: #379F95"));
+		startButton.setOnMouseExited(event -> startButton.setStyle("-fx-background-color: #3CAEA3"));
+		// This event handler switches from the Title Scene to the Player Name Scene
+		startButton.setOnAction(event -> {
+			primaryStage.setScene(scenePlayerName);
+		});
+
+		// Player Name Scene and Root
+		/* This scene is where players input their name for potential high scoring. */
+		rootPlayerName = new Pane();
+		scenePlayerName = new Scene(rootPlayerName, 900, 600);
+		// Player Name Title
+		Text playerNameTitle = new Text("Write your name.");
+		playerNameTitle.setFont(Font.font("impact", 40));
+		playerNameTitle.setLayoutX(310);
+		playerNameTitle.setLayoutY(200);
+		rootPlayerName.getChildren().add(playerNameTitle);
+		// Player 1 Model
+		Rectangle p1Model = new Rectangle(50, 50, Color.CRIMSON);
+		p1Model.setX(225 - p1Model.getWidth() / 2);
+		p1Model.setY(300 - p1Model.getHeight() / 2);
+		p1Model.setStroke(Color.BLACK);
+		p1Model.setStrokeWidth(1);
+		rootPlayerName.getChildren().add(p1Model);
+		Label p1Label = new Label("P1");
+		p1Label.setLayoutX(p1Model.getX() + 18);
+		p1Label.setLayoutY(p1Model.getY() + 18);
+		rootPlayerName.getChildren().add(p1Label);
+		// Player 2 Model
+		Rectangle p2Model = new Rectangle(50, 50, Color.ROYALBLUE);
+		p2Model.setX(675 - p2Model.getWidth() / 2);
+		p2Model.setY(300 - p2Model.getHeight() / 2);
+		p2Model.setStroke(Color.BLACK);
+		p2Model.setStrokeWidth(1);
+		rootPlayerName.getChildren().add(p2Model);
+		Label p2Label = new Label("P2");
+		p2Label.setLayoutX(p2Model.getX() + 18);
+		p2Label.setLayoutY(p2Model.getY() + 18);
+		rootPlayerName.getChildren().add(p2Label);
+		// Player 1 TextField
+		p1TF.setPrefColumnCount(10);
+		p1TF.setLayoutX(p1Model.getX() - 35);
+		p1TF.setLayoutY(p1Model.getY() + 65);
+		rootPlayerName.getChildren().add(p1TF);
+		// Player 2 TextField
+		p2TF.setPrefColumnCount(10);
+		p2TF.setLayoutX(p2Model.getX() - 35);
+		p2TF.setLayoutY(p2Model.getY() + 65);
+		rootPlayerName.getChildren().add(p2TF);
+		// Player Name Scene Begin Button (Player Name Scene to Game Scene)
+		Button startGameButton = new Button("BEGIN");
+		startGameButton.setPrefWidth(165);
+		startGameButton.setPrefHeight(40);
+		startGameButton.setLayoutX(450 - startGameButton.getPrefWidth() / 2);
+		startGameButton.setLayoutY(400 - startGameButton.getPrefHeight() / 2);
+		rootPlayerName.getChildren().add(startGameButton);
+
+		// Back Button (Player Name to Title Scene)
+		Button backButtonPN = new Button("<-");
+		rootPlayerName.getChildren().add(backButtonPN);
+		backButtonPN.setPrefWidth(60);
+		backButtonPN.setPrefHeight(40);
+		backButtonPN.setLayoutX(50 - backButtonPN.getPrefWidth() / 2);
+		backButtonPN.setLayoutY(40 - backButtonPN.getPrefWidth() / 2);
+		// This event handler switches from the Player Name Scene to the Title Scene
+		backButtonPN.setOnAction(event -> primaryStage.setScene(mainScene));
+		// Dims the button when hovering over it
+		backButtonPN.setStyle("-fx-background-color: #3CAEA3");
+		backButtonPN.setOnMouseEntered(event -> backButtonPN.setStyle("-fx-background-color: #379F95"));
+		backButtonPN.setOnMouseExited(event -> backButtonPN.setStyle("-fx-background-color: #3CAEA3"));
+
+		/*
+		 * When the button is pressed, it takes the Strings in the TextFields and
+		 * assigns them to the Label used to display each players' name during the game.
+		 * This event handler also creates the clock for the game and starts the
+		 * gameLoop/AnimationTimer.
+		 */
+		startGameButton.setOnAction(event -> {
+			try {
+				fileReader();
+			} catch (Exception e) {
+			}
+			if (p1TF.getCharacters().toString().equals(" ") || p1TF.getCharacters().toString().equals("")
+					|| p2TF.getCharacters().toString().equals(" ") || p2TF.getCharacters().toString().equals("")) {
+				rootPlayerName.getChildren().clear();
+				rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
+						startGameButton, playerNameTitle);
+				emptyName = new Label("Please enter a name.");
+				emptyName.setLayoutX(397);
+				emptyName.setLayoutY(435);
+				rootPlayerName.getChildren().add(emptyName);
+				rootPlayerName.getChildren().remove(sameName);
+			} else if (p1TF.getCharacters().toString().equals(p2TF.getCharacters().toString())) {
+				rootPlayerName.getChildren().clear();
+				rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
+						startGameButton, playerNameTitle);
+				sameName = new Label("Please have two unique names.");
+				sameName.setLayoutX(367);
+				sameName.setLayoutY(435);
+				rootPlayerName.getChildren().add(sameName);
+				rootPlayerName.getChildren().remove(emptyName);
+			} else if (p1TF.getCharacters().toString().equals(highScoreName)) {
+				rootPlayerName.getChildren().clear();
+				rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
+						startGameButton, playerNameTitle);
+				samePerson = new Label("P1, are you the same person as the high scorer?");
+				samePerson.setLayoutX(330);
+				samePerson.setLayoutY(435);
+				rootPlayerName.getChildren().add(samePerson);
+				yesSamePerson = new Button("Yes?");
+				yesSamePerson.setPrefWidth(50);
+				yesSamePerson.setPrefHeight(10);
+				yesSamePerson.setLayoutX(400 - yesSamePerson.getPrefWidth() / 2);
+				yesSamePerson.setLayoutY(500 - yesSamePerson.getPrefWidth() / 2);
+				rootPlayerName.getChildren().add(yesSamePerson);
+				noSamePerson = new Button("No?");
+				noSamePerson.setPrefWidth(50);
+				noSamePerson.setPrefHeight(10);
+				noSamePerson.setLayoutX(500 - noSamePerson.getPrefWidth() / 2);
+				noSamePerson.setLayoutY(500 - noSamePerson.getPrefWidth() / 2);
+				rootPlayerName.getChildren().add(noSamePerson);
+				rootPlayerName.getChildren().remove(emptyName);
+				rootPlayerName.getChildren().remove(sameName);
+				rootPlayerName.getChildren().remove(changeName);
+				yesSamePerson.setOnAction(e -> {
+					rootPlayerName.getChildren().clear();
+					rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
+							startGameButton, playerNameTitle);
+					primaryStage.setScene(sceneGame);
+					gameLoop.start();
+					timer[clockCounter] = new clock();
+					rootGame.getChildren().add(timer[clockCounter]);
+					p1NameInput = p1TF.getCharacters().toString();
+					p1Name.setText(p1NameInput);
+					p2NameInput = p2TF.getCharacters().toString();
+					p2Name.setText(p2NameInput);
+					rootPlayerName.getChildren().remove(emptyName);
+					rootPlayerName.getChildren().remove(sameName);
+					rootPlayerName.getChildren().remove(samePerson);
+					rootPlayerName.getChildren().remove(changeName);
+
+				});
+				noSamePerson.setOnAction(e -> {
+					rootPlayerName.getChildren().remove(samePerson);
+					changeName = new Label("Please change your name.");
+					changeName.setLayoutX(380);
+					changeName.setLayoutY(435);
+					rootPlayerName.getChildren().add(changeName);
+					rootPlayerName.getChildren().remove(yesSamePerson);
+					rootPlayerName.getChildren().remove(noSamePerson);
+				});
+			} else if (p2TF.getCharacters().toString().equals(highScoreName)) {
+				rootPlayerName.getChildren().clear();
+				rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
+						startGameButton, playerNameTitle);
+				samePerson = new Label("P2, are you the same person as the high scorer?");
+				samePerson.setLayoutX(330);
+				samePerson.setLayoutY(435);
+				rootPlayerName.getChildren().add(samePerson);
+				yesSamePerson = new Button("Yes?");
+				yesSamePerson.setPrefWidth(50);
+				yesSamePerson.setPrefHeight(10);
+				yesSamePerson.setLayoutX(400 - yesSamePerson.getPrefWidth() / 2);
+				yesSamePerson.setLayoutY(500 - yesSamePerson.getPrefWidth() / 2);
+				rootPlayerName.getChildren().add(yesSamePerson);
+				noSamePerson = new Button("No?");
+				noSamePerson.setPrefWidth(50);
+				noSamePerson.setPrefHeight(10);
+				noSamePerson.setLayoutX(500 - noSamePerson.getPrefWidth() / 2);
+				noSamePerson.setLayoutY(500 - noSamePerson.getPrefWidth() / 2);
+				rootPlayerName.getChildren().add(noSamePerson);
+				rootPlayerName.getChildren().remove(emptyName);
+				rootPlayerName.getChildren().remove(sameName);
+				rootPlayerName.getChildren().remove(changeName);
+				yesSamePerson.setOnAction(e -> {
+					rootPlayerName.getChildren().clear();
+					rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
+							startGameButton, playerNameTitle);
+					primaryStage.setScene(sceneGame);
+					gameLoop.start();
+					timer[clockCounter] = new clock();
+					rootGame.getChildren().add(timer[clockCounter]);
+					p1NameInput = p1TF.getCharacters().toString();
+					p1Name.setText(p1NameInput);
+					p2NameInput = p2TF.getCharacters().toString();
+					p2Name.setText(p2NameInput);
+					rootPlayerName.getChildren().remove(emptyName);
+					rootPlayerName.getChildren().remove(sameName);
+					rootPlayerName.getChildren().remove(samePerson);
+					rootPlayerName.getChildren().remove(changeName);
+
+				});
+				noSamePerson.setOnAction(e -> {
+					rootPlayerName.getChildren().remove(samePerson);
+					changeName = new Label("Please change your name.");
+					changeName.setLayoutX(380);
+					changeName.setLayoutY(435);
+					rootPlayerName.getChildren().add(changeName);
+					rootPlayerName.getChildren().remove(yesSamePerson);
+					rootPlayerName.getChildren().remove(noSamePerson);
+				});
+			} else {
+				rootPlayerName.getChildren().clear();
+				rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
+						startGameButton, playerNameTitle);
+				primaryStage.setScene(sceneGame);
+				gameLoop.start();
+				timer[clockCounter] = new clock();
+				rootGame.getChildren().add(timer[clockCounter]);
+				p1NameInput = p1TF.getCharacters().toString();
+				p1Name.setText(p1NameInput);
+				p2NameInput = p2TF.getCharacters().toString();
+				p2Name.setText(p2NameInput);
+				rootPlayerName.getChildren().remove(emptyName);
+				rootPlayerName.getChildren().remove(sameName);
+				rootPlayerName.getChildren().remove(samePerson);
+				rootPlayerName.getChildren().remove(changeName);
+			}
+		});
+
 		// High Score Scene and Root
 		rootHS = new Pane();
 		sceneHS = new Scene(rootHS, 900, 600);
 
-		// High Score Page
+		// High Score Page (Serves as a border for the High Score)
 		Rectangle highScorePage = new Rectangle(400, 580);
 		highScorePage.setX(250);
 		highScorePage.setY(10);
 		highScorePage.setStroke(Color.BLACK);
 		highScorePage.setFill(Color.WHITE);
-		rootHS.getChildren().addAll(highScorePage);
-		// High Score Text
+		rootHS.getChildren().add(highScorePage);
+		// High Score Title
 		Text highScore = new Text("HIGHSCORE");
 		highScore.setFont(Font.font("verdana", 40));
 		highScore.setY(55);
 		highScore.setX(310);
 		rootHS.getChildren().add(highScore);
+		/*
+		 * This try catch statements surrounds the fileReader method so that if it
+		 * throws an error, like not being able to find the file, it prints the error
+		 * but still runs the code. If the error occurs, the e.printStackTrace prints
+		 * the error to the console.
+		 */
 		try {
 			fileReader();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		currentHighScore = new Text(highScoreString);
-		VBox highScoreText = new VBox(20);
-		highScoreText.getChildren().add(currentHighScore);
-		highScoreText.setLayoutX(310);
-		highScoreText.setLayoutY(120);
-		rootHS.getChildren().add(highScoreText);
-
+		if (highScoreName.equals("") && highScoreIntToString.equals("")) {
+			noHighScore = new Text("There is currently no high score.");
+			noHighScore.setFont(Font.font(18));
+			rootHS.getChildren().add(noHighScore);
+			noHighScore.setLayoutX(265);
+			noHighScore.setLayoutY(140);
+		} else {
+			rootHS.getChildren().remove(noHighScore);
+			highScoreNameIntro = new Text("The current high scorer belongs to:");
+			highScoreNameIntro.setFont(Font.font(18));
+			highScoreNameLine = new Text("        " + highScoreName);
+			highScoreNameLine.setFont(Font.font(14));
+			highScoreIntIntro = new Text("with a score of:");
+			highScoreIntIntro.setFont(Font.font(18));
+			highScoreIntLine = new Text("        " + highScoreIntToString + " seconds.");
+			highScoreIntLine.setFont(Font.font(14));
+			// High Score VBox to put the text in.
+			VBox highScoreText = new VBox(20);
+			highScoreText.getChildren().addAll(highScoreNameIntro, highScoreNameLine, highScoreIntIntro,
+					highScoreIntLine);
+			highScoreText.setLayoutX(265);
+			highScoreText.setLayoutY(120);
+			rootHS.getChildren().add(highScoreText);
+		}
 		// Back Button (High Score to Title Page)
 		Button backButtonHS = new Button("<-");
 		rootHS.getChildren().add(backButtonHS);
@@ -360,14 +566,14 @@ public class Main extends Application {
 		backButtonHS.setPrefHeight(40);
 		backButtonHS.setLayoutX(50 - backButtonHS.getPrefWidth() / 2);
 		backButtonHS.setLayoutY(40 - backButtonHS.getPrefWidth() / 2);
-		// Back Button (High Score to Title Page) Event Handler
+		// This event handler switches from the High Score Scene to the Title Scene
 		backButtonHS.setOnAction(event -> primaryStage.setScene(mainScene));
-		// Button Dimming
+		// Dims the button when hovering over it
 		backButtonHS.setStyle("-fx-background-color: #3CAEA3");
 		backButtonHS.setOnMouseEntered(event -> backButtonHS.setStyle("-fx-background-color: #379F95"));
 		backButtonHS.setOnMouseExited(event -> backButtonHS.setStyle("-fx-background-color: #3CAEA3"));
-		// High Score Button
-		Button highscoresButton = new Button("HIGH SCORES"); // High Scores Button
+		// High Score Button (Title Scene to High Score
+		Button highscoresButton = new Button("HIGH SCORES");
 		final Label highLabel = new Label();
 		rootTitle.getChildren().add(highscoresButton);
 		highscoresButton.setPrefWidth(165);
@@ -376,17 +582,18 @@ public class Main extends Application {
 		highscoresButton.setLayoutY(400 - highscoresButton.getPrefWidth() / 2);
 		highLabel.setLayoutX(290);
 		highLabel.setLayoutY(290);
+		// Button Dimming
 		highscoresButton.setStyle("-fx-background-color: #EE4540");
 		highscoresButton.setOnMouseEntered(event -> highscoresButton.setStyle("-fx-background-color: #D93F3B"));
 		highscoresButton.setOnMouseExited(event -> highscoresButton.setStyle("-fx-background-color: #EE4540"));
-		// High Score Button Event Handler
+		// This event handler switches from the Title Scene to the High Score Scene
 		highscoresButton.setOnAction(event -> primaryStage.setScene(sceneHS));
 
 		// Instructions Scene and Pane
 		rootI = new Pane();
 		sceneI = new Scene(rootI, 900, 600);
 		// Instructions Page
-		Rectangle instructionsPage = new Rectangle(400, 580); // instructions "box"
+		Rectangle instructionsPage = new Rectangle(400, 580);
 		instructionsPage.setX(250);
 		instructionsPage.setY(10);
 		instructionsPage.setStroke(Color.BLACK);
@@ -399,12 +606,13 @@ public class Main extends Application {
 		instructionsTitle.setY(55);
 		rootI.getChildren().add(instructionsTitle);
 
-		// Game Instructions
+		// Game Instructions Header
 		Text gameInstructions = new Text("Goal of the Game:");
 		gameInstructions.setFont(Font.font("verdana", 20));
 		gameInstructions.setX(265);
 		gameInstructions.setY(110);
 		rootI.getChildren().add(gameInstructions);
+		// Game Instructions Text
 		VBox gameTextInstructions = new VBox(20);
 		Text gameTextInstructionsLine1 = new Text("The goal of the game is to eliminate the other player.");
 		Text gameTextInstructionsLine2 = new Text("Each player has 3 lives and can shoot a bullet every 2 seconds.");
@@ -415,7 +623,7 @@ public class Main extends Application {
 				gameTextInstructionsLine3);
 		rootI.getChildren().add(gameTextInstructions);
 
-		// P1 Instructions
+		// P1 Instructions Header
 		Text p1Instructions = new Text("P1:");
 		p1Instructions.setFont(Font.font("verdana", 20));
 		p1Instructions.setX(265);
@@ -430,7 +638,7 @@ public class Main extends Application {
 		p1TextInstructions.setLayoutY(225);
 		rootI.getChildren().add(p1TextInstructions);
 
-		// P2 Instructions
+		// P2 Instructions Header
 		Text p2Instructions = new Text("P2:");
 		p2Instructions.setFont(Font.font("verdana", 20));
 		p2Instructions.setX(265);
@@ -447,7 +655,7 @@ public class Main extends Application {
 		p2TextInstructions.setLayoutY(335);
 		rootI.getChildren().add(p2TextInstructions);
 
-		// Other Instructions
+		// Other Instructions Header
 		Text otherInstructions = new Text("Other:");
 		otherInstructions.setFont(Font.font("verdana", 20));
 		otherInstructions.setLayoutX(265);
@@ -462,7 +670,7 @@ public class Main extends Application {
 		otherTextInstructions.setLayoutY(480);
 		rootI.getChildren().add(otherTextInstructions);
 
-		// Back Button (Instructions to Title Page)
+		// Back Button (Instructions Scene to Title Scene)
 		Button backButtonI = new Button("<-"); // Back Button
 		rootI.getChildren().add(backButtonI);
 		backButtonI.setPrefWidth(60);
@@ -474,8 +682,8 @@ public class Main extends Application {
 		backButtonI.setOnMouseEntered(event -> backButtonI.setStyle("-fx-background-color: #379F95"));
 		backButtonI.setOnMouseExited(event -> backButtonI.setStyle("-fx-background-color: #3CAEA3"));
 
-		// Instructions Button
-		Button instructionsButton = new Button("INSTRUCTIONS"); // Instructions Button
+		// Instructions Button (Title Scene to Instructions Scene)
+		Button instructionsButton = new Button("INSTRUCTIONS");
 		final Label insLabel = new Label();
 		rootTitle.getChildren().add(instructionsButton);
 		instructionsButton.setPrefWidth(165);
@@ -490,6 +698,9 @@ public class Main extends Application {
 		// Instructions Button Event Handler
 		instructionsButton.setOnAction(event -> primaryStage.setScene(sceneI));
 
+		// Game Scene and Root
+		rootGame = new Pane();
+		sceneGame = new Scene(rootGame, 900, 600);
 		// Key Numbers
 		int mapCenter = 250;
 		int screenCenter = (int) sceneGame.getWidth() / 2;
@@ -642,6 +853,11 @@ public class Main extends Application {
 		// Event Handler
 		sceneGame.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 			// Move Up (P1) Event Handler
+			/*
+			 * When a key is pressed, we turn the boolean for each corresponding player and
+			 * a direction to true. This allows the player to 1) press the button and move a
+			 * little, and 2) hold the button to slide.
+			 */
 			if (event.getCode() == KeyCode.W) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p1MoveUp = true;
@@ -666,6 +882,11 @@ public class Main extends Application {
 				}
 			}
 			// Player 1 Bullet Event Handler
+			/*
+			 * This event handler turns on a method that creates and moves the bullet from
+			 * the corresponding player to the other side of the map. The gameLoop handles
+			 * all the collision detection and reaching it's end position. The try catch
+			 */
 			if (event.getCode() == KeyCode.D) {
 				try {
 					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
@@ -946,7 +1167,22 @@ public class Main extends Application {
 							e.printStackTrace();
 						}
 					}
-					currentHighScore.setText(highScoreString);
+					rootHS.getChildren().remove(noHighScore);
+					highScoreNameIntro = new Text("The current high scorer belongs to:");
+					highScoreNameIntro.setFont(Font.font(18));
+					highScoreNameLine = new Text("        " + highScoreName);
+					highScoreNameLine.setFont(Font.font(14));
+					highScoreIntIntro = new Text("with a score of:");
+					highScoreIntIntro.setFont(Font.font(18));
+					highScoreIntLine = new Text("        " + highScoreIntToString + " seconds.");
+					highScoreIntLine.setFont(Font.font(14));
+					// High Score VBox to put the text in.
+					VBox highScoreText = new VBox(20);
+					highScoreText.getChildren().addAll(highScoreNameIntro, highScoreNameLine, highScoreIntIntro,
+							highScoreIntLine);
+					highScoreText.setLayoutX(265);
+					highScoreText.setLayoutY(120);
+					rootHS.getChildren().add(highScoreText);
 
 					gameOver.setOnAction(event -> {
 						rootGame.getChildren().remove(gameOver);
