@@ -1,3 +1,30 @@
+/*
+ * Made by Marcus Uy and Ryan Seto.
+ * Game Name: HIYA!
+ * Work Cited:
+ * - Button shortcut event handler [.setOnAction(e -> {});]
+ *   - http://tutorials.jenkov.com/javafx/button.html
+ * - Rectangles, Labels, VBox, TextFields, and Text all used this API
+ *   - https://docs.oracle.com/javase/8/javafx/api/toc.htm
+ * - FileReader and BufferedReader
+ *   - https://docs.oracle.com/javase/10/docs/api/?java/io/FileReader.html
+ *   - https://www.youtube.com/watch?v=VwV1VKvtVtI
+ * - FileWriter and BufferedWriter
+ *   - https://www.youtube.com/watch?v=ymvFVkJ_SDI
+ * - TranslateTransion
+ *   - http://www.informit.com/articles/article.aspx?p=2359759
+ * - Timeline
+ *   - https://www.youtube.com/watch?v=t2Bv6hwELsU
+ * - JavaFX Colors
+ *   - https://docs.oracle.com/javase/8/javafx/api/javafx/scene/paint/class-use/Color.html
+ * - Try Catch Statements
+ *   - https://www.dummies.com/programming/java/try-statements-in-java/
+ * - Button Dimming
+ *   - 
+ * - Setting Fonts
+ *   - https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
+ */
+
 package application;
 
 import java.io.BufferedReader;
@@ -220,13 +247,13 @@ public class Main extends Application {
 				}
 				// Pulls out the high scorer's name.
 				if (colonCheck == false) {
-					String tempChar = String.valueOf(line.charAt(i));
+					char tempChar = line.charAt(i);
 					highScoreName = highScoreName + "" + tempChar;
 				}
 				// Pulls out the high score as a String.
 				if (colonCheck == true) {
 					if ((int) line.charAt(i) >= 48 && (int) line.charAt(i) <= 57) {
-						String tempChar = String.valueOf(line.charAt(i));
+						char tempChar = line.charAt(i);
 						highScoreIntString = highScoreIntString + "" + tempChar;
 					}
 				}
