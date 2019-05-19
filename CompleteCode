@@ -40,10 +40,8 @@ public class Main extends Application {
 	public static Pane rootHighScore;
 	public static Scene sceneHighScore;
 
-	/*
-	 * Player Name Pane and Scene. This scene is where Players input their names for
-	 * high score.
-	 */
+	// Player Name Pane and Scene. This scene is where Players input their names for
+	// high score.
 	public static Pane rootPlayerName;
 	public static Scene scenePlayerName;
 	// Player Name Display Labels.
@@ -96,11 +94,7 @@ public class Main extends Application {
 	// Bullet TranslateTransition
 	public static TranslateTransition p1BulletTransition = new TranslateTransition();
 	public static TranslateTransition p2BulletTransition = new TranslateTransition();
-	// Bullet Desired X
-	/*
-	 * These are the values are the values that the bullets must move by, as in +700
-	 * or -700 pixels from where they currently are.
-	 */
+	// Bullet Desired X for TranslateTransitions
 	public static double p1DesiredX = 700;
 	public static double p2DesiredX = -700;
 	// Bullet Recharge Line TranslateTransition
@@ -136,10 +130,8 @@ public class Main extends Application {
 	public static ArrayList<clock> timerArr = new ArrayList<clock>();
 	public static int winningTime;
 
-	/*
-	 * This timer starts and ends with the game. This is used to track who can win
-	 * the fastest for the high score.
-	 */
+	// This timer starts and ends with the game. This is used to track who can win
+	// the fastest for the high score.
 	public class clock extends Pane {
 		private clock() {
 			time.setFont(Font.font(50));
@@ -147,48 +139,44 @@ public class Main extends Application {
 			time.setLayoutY(15);
 			rootGame.getChildren().add(time);
 			timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> timeLabel()));
-			/*
-			 *  Since the game ends when one player is out of lives, not when a timer runs out, the timer
-			 *  runs forever. 
-			 */
+			// Since the game ends when one player is out of lives, not when a timer runs
+			// out, the timer runs forever.
 			timer.setCycleCount(Timeline.INDEFINITE);
 			timer.play();
 		}
+
 		int secondsPass = 0;
 		String labelString = " ";
 		String tempSecs = "";
 		String tempMins = "";
 		int mins = 0;
 		Label time = new Label("00:00");
+
 		private void timeLabel() {
 			if (secondsPass >= 0) {
 				secondsPass++;
-				// This blocks sets the front portion of the label to how many minutes have gone buy.
+				// This blocks sets the front portion of the label to how many minutes have gone
+				// buy.
 				if (mins < 10) {
 					tempMins = "0" + mins;
 					labelString = tempMins + ":" + secondsPass;
 				}
-				/*
-				 * This blocks sets sets the back portion of the label to how many seconds have passed. Once 
-				 * time has reached 2 digits, this code does not need to run since there is no 0 in front of 
-				 * 2 digit clocks in a digital clock. 
-				 */
+				// Sets the back portion of the label to how many seconds have passed. If time
+				// is less than 10, adds a zero in front.
 				if (secondsPass < 10) {
 					tempSecs = "0" + secondsPass;
 					labelString = tempMins + ":" + tempSecs;
 				}
-				// This increments the number of minutes and resets secondsPass if 60 seconds has passed. 
+				// This increments the number of minutes and resets secondsPass if 60 seconds
+				// has passed.
 				if (secondsPass % 60 == 0) {
 					secondsPass = 0;
 					mins++;
 					tempMins = mins + "";
 				}
 				time.setText(labelString);
-				/*
-				 *  Since secondsPass is a local variable, we created winningTime so that we could access 
-				 *  the time outside of the method since it is private. 
-				 */
-				
+				// Since secondsPass is a local variable, we created winningTime so that we
+				// could access the time outside of the method since it is private.
 				winningTime = secondsPass;
 			}
 		}
@@ -204,7 +192,7 @@ public class Main extends Application {
 	// winning time.
 	public static int highScoreInt = 0;
 	// This String will store the String value of the high score for display.
-	public static String highScoreIntToString = "";
+	public static String highScoreIntString = "";
 	// This String will store the name of the high scorer.
 	public static String highScoreName = "";
 
@@ -215,55 +203,42 @@ public class Main extends Application {
 	public static Text highScoreIntLine;
 	public static Text noHighScore;
 
-	// This is the method that reads the text file for the high score.
+	// This is the method that reads the text file for the high score. The only
+	// restriction to the player's name is that it cannot have a colon.
 	public static void fileReader() throws Exception {
 		fileReader = new FileReader("HighScore.txt");
 		reader = new BufferedReader(fileReader);
 		String line = reader.readLine();
-		/*
-		 * This code reads the text file and pulls out the name and score of the high
-		 * score. The text file always follows the same format, (ie Name: Score). This
-		 * for loop reads each char of the String. If the colonCheck is false, meaning a
-		 * colon has not appeared, then all chars before then are the chars of the name.
-		 * Once the colon has appeared. The following numbers that appear are the score.
-		 * The chars of the score are put into a String, which is then parsed into an
-		 * int. This is so it does not need to check if numbers are in the hundreds
-		 * digit or the tens digit or the ones digit. This colon is used to
-		 * differentiate the name between the number for specific cases. For example, if
-		 * the player has a number in their name, then the code can still tell what the
-		 * name is. The only limitation of this code is that players cannot have a colon
-		 * in their name.
-		 */
 		boolean colonCheck = false;
 		if (line != null) {
 			highScoreName = "";
-			highScoreIntToString = "";
+			highScoreIntString = "";
 			for (int i = 0; i < line.length(); i++) {
+				// Checks if there is a colon. Everything before the colon is the player's name.
 				if ((int) line.charAt(i) == 58) {
 					colonCheck = true;
 				}
+				// Pulls out the high scorer's name.
 				if (colonCheck == false) {
 					String tempChar = String.valueOf(line.charAt(i));
 					highScoreName = highScoreName + "" + tempChar;
 				}
+				// Pulls out the high score as a String.
 				if (colonCheck == true) {
 					if ((int) line.charAt(i) >= 48 && (int) line.charAt(i) <= 57) {
 						String tempChar = String.valueOf(line.charAt(i));
-						highScoreIntToString = highScoreIntToString + "" + tempChar;
+						highScoreIntString = highScoreIntString + "" + tempChar;
 					}
 				}
 			}
-			highScoreInt = Integer.parseInt(highScoreIntToString.trim());
+			// Parses the String to an int.
+			highScoreInt = Integer.parseInt(highScoreIntString.trim());
 		}
 		reader.close();
 	}
 
-	/*
-	 * This code takes the current winner and the time taken to do so and writes it
-	 * to HighScore.txt. This method is only called when winningTime > highScoreInt.
-	 * This code always writes to the text file in a Name: Score format so the
-	 * reader can differentiate the name and the score.
-	 */
+	// Writes the name of the new high scorer to the text file. Always writes the
+	// score in a "Name: Score" format.
 	public static void fileWriter() throws Exception {
 		fileWriter = new FileWriter("HighScore.txt");
 		writer = new BufferedWriter(fileWriter);
@@ -302,11 +277,7 @@ public class Main extends Application {
 		startButton.setPrefWidth(165);
 		startButton.setPrefHeight(40);
 		startButton.setLayoutX(450 - startButton.getPrefWidth() / 2);
-		/*
-		 * This KeyPixel - Object.getDimension()/2 format allows us to take the
-		 * "key pixel" we want and make that the center of the button. Makes positioning
-		 * nodes more intuitive
-		 */
+		// Puts the center of the object on the pixel. Makes positioning more intuitive.
 		startButton.setLayoutY(350 - startButton.getPrefWidth() / 2);
 		startLabel.setLayoutX(290);
 		startLabel.setLayoutY(290);
@@ -377,32 +348,14 @@ public class Main extends Application {
 		backButtonPN.setStyle("-fx-background-color: #3CAEA3");
 		backButtonPN.setOnMouseEntered(event -> backButtonPN.setStyle("-fx-background-color: #379F95"));
 		backButtonPN.setOnMouseExited(event -> backButtonPN.setStyle("-fx-background-color: #3CAEA3"));
-		/*
-		 * When the Begin Button has been pressed, the code checks 4 scenarios. These 4
-		 * scenarios are if a player has no, if the two players have the same name, if
-		 * P1 is the same person who scored the high score, and if P2 is the same person
-		 * who scored the high score. If any of these scenarios are true, then the game
-		 * cannot begin. If the game is ready to be played, then the scene switches, a
-		 * timer object is created, and the gameLoop starts. At the beginning of each
-		 * case, there is a block of code that clears the whole scene then re-adds
-		 * elements back. There was an issue where if the player spams the Begin Button
-		 * and 1 or more of the 4 scenarios are true, then the message to the player
-		 * that asks them to change their names would re-appear on top of itself. This
-		 * made it so removing the element once did not work. The clear statement
-		 * removes all of the elements, including the spammed messages, and re-adds the
-		 * elements that should stay on screen.
-		 */
 		startGameButton.setOnAction(event -> {
-			/*
-			 * This try catch statements surrounds the fileReader method so that if it
-			 * throws an error, like not being able to find the file, it prints the error
-			 * but still runs the code. If the error occurs, the e.printStackTrace prints
-			 * the error to the console.
-			 */
+			// This try catch makes it so if the file cannot be found, no error is printed.
 			try {
 				fileReader();
 			} catch (Exception e) {
 			}
+			// Resets the scene. If the Begin Button is spammed, too many error messages for
+			// the player are displayed on the scene. This fixes that error.
 			rootPlayerName.getChildren().clear();
 			rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
 					startGameButton, playerNameTitle);
@@ -414,19 +367,19 @@ public class Main extends Application {
 				emptyName.setLayoutY(435);
 				rootPlayerName.getChildren().add(emptyName);
 				rootPlayerName.getChildren().remove(sameName);
-				// Scenario 2: P1 and P2 have the same name.
-			} else if (p1TF.getCharacters().toString().equals(p2TF.getCharacters().toString())) {
+
+			}
+			// Scenario 2: P1 and P2 have the same name.
+			else if (p1TF.getCharacters().toString().equals(p2TF.getCharacters().toString())) {
 				sameName = new Label("Please have two unique names.");
 				sameName.setLayoutX(367);
 				sameName.setLayoutY(435);
 				rootPlayerName.getChildren().add(sameName);
 				rootPlayerName.getChildren().remove(emptyName);
-				/*
-				 * Scenario 3: P1 has the same name as the high score. This asks the player if
-				 * they are the high scorer. If they are, they can press the yes button and the
-				 * game begins, and if they are not, then they must change their name.
-				 */
-			} else if (p1TF.getCharacters().toString().equals(highScoreName)) {
+			}
+			// Scenario 3: P1 has the same name as the high score. Players can then say yes
+			// or no.
+			else if (p1TF.getCharacters().toString().equals(highScoreName)) {
 				samePerson = new Label("P1, are you the same person as the high scorer?");
 				samePerson.setLayoutX(325);
 				samePerson.setLayoutY(435);
@@ -446,8 +399,7 @@ public class Main extends Application {
 				rootPlayerName.getChildren().remove(emptyName);
 				rootPlayerName.getChildren().remove(sameName);
 				rootPlayerName.getChildren().remove(changeName);
-				// The Yes Button event handler. This code is the exact same as "Scenario 5"
-				// below.
+				// The Yes Button event handler. Exact same as Scenario 5.
 				yesSamePerson.setOnAction(e -> {
 					primaryStage.setScene(sceneGame);
 					gameLoop.start();
@@ -463,8 +415,7 @@ public class Main extends Application {
 					rootPlayerName.getChildren().remove(changeName);
 
 				});
-				// The No Button event handler. This code will remove the buttons and display a
-				// message.
+				// The No Button event handler.
 				noSamePerson.setOnAction(e -> {
 					rootPlayerName.getChildren().remove(samePerson);
 					rootPlayerName.getChildren().remove(yesSamePerson);
@@ -474,8 +425,10 @@ public class Main extends Application {
 					changeName.setLayoutY(435);
 					rootPlayerName.getChildren().add(changeName);
 				});
-				// Scenario 4: P2 has the same name as the high score.
-			} else if (p2TF.getCharacters().toString().equals(highScoreName)) {
+
+			}
+			// Scenario 4: P2 has the same name as the high score.
+			else if (p2TF.getCharacters().toString().equals(highScoreName)) {
 				samePerson = new Label("P2, are you the same person as the high scorer?");
 				samePerson.setLayoutX(325);
 				samePerson.setLayoutY(435);
@@ -495,8 +448,7 @@ public class Main extends Application {
 				rootPlayerName.getChildren().remove(emptyName);
 				rootPlayerName.getChildren().remove(sameName);
 				rootPlayerName.getChildren().remove(changeName);
-				// The Yes Button event handler. This code is the exact same as "Scenario 5"
-				// below.
+				// The Yes Button event handler. Exacts same as Scenario 5.
 				yesSamePerson.setOnAction(e -> {
 					primaryStage.setScene(sceneGame);
 					gameLoop.start();
@@ -512,8 +464,7 @@ public class Main extends Application {
 					rootPlayerName.getChildren().remove(changeName);
 
 				});
-				// The No Button event handler. This code will remove the buttons and display a
-				// message.
+				// The No Button event handler.
 				noSamePerson.setOnAction(e -> {
 					rootPlayerName.getChildren().remove(samePerson);
 					changeName = new Label("Please change your name.");
@@ -523,9 +474,11 @@ public class Main extends Application {
 					rootPlayerName.getChildren().remove(yesSamePerson);
 					rootPlayerName.getChildren().remove(noSamePerson);
 				});
-				// "Scenario 5": If none of the above error scenarios is true, then the game can
-				// begin.
-			} else {
+
+			}
+			// Scenario 5: If none of the above error scenarios are true, then the game can
+			// begin.
+			else {
 				primaryStage.setScene(sceneGame);
 				gameLoop.start();
 				timerArr.add(new clock());
@@ -574,13 +527,8 @@ public class Main extends Application {
 			fileReader();
 		} catch (Exception e) {
 		}
-		/*
-		 * This code checks to see if there is a high score. If there is no high score,
-		 * then the first block runs and the corresponding message is displayed. If
-		 * there is a high score, then the second block runs and displays who the score
-		 * belongs to and what score it was.
-		 */
-		if (highScoreName.equals("") && highScoreIntToString.equals("")) {
+		// Checks if there is a high score. The code displays messages accordingly.
+		if (highScoreName.equals("") && highScoreIntString.equals("")) {
 			noHighScore = new Text("There is currently no high score.");
 			noHighScore.setFont(Font.font(18));
 			rootHighScore.getChildren().add(noHighScore);
@@ -594,7 +542,7 @@ public class Main extends Application {
 			highScoreNameLine.setFont(Font.font(14));
 			highScoreIntIntro = new Text("with a score of:");
 			highScoreIntIntro.setFont(Font.font(18));
-			highScoreIntLine = new Text("        " + highScoreIntToString + " seconds.");
+			highScoreIntLine = new Text("        " + highScoreIntString + " seconds.");
 			highScoreIntLine.setFont(Font.font(14));
 			// High Score VBox to put the text in.
 			VBox highScoreText = new VBox(20);
@@ -707,11 +655,9 @@ public class Main extends Application {
 		VBox otherTextInstructions = new VBox(20);
 		Text pauseInstructionsLine1 = new Text("Press P to pause.");
 		Text pauseInstructionsLine2 = new Text("There is no 3 second break after resuming the game.");
-		/*
-		 * There is no 3 second pause since most games that require focus and reflexes,
-		 * ie Geometry Dash and Smash Bros. do not grant a buffer time to discourage
-		 * pausing.
-		 */
+		// There is no 3 second pause since most games that require focus and reflexes,
+		// ie Geometry Dash and Smash Bros. do not grant a buffer time to discourage
+		// pausing.
 		otherTextInstructions.getChildren().addAll(pauseInstructionsLine1, pauseInstructionsLine2);
 		otherTextInstructions.setLayoutX(310);
 		otherTextInstructions.setLayoutY(480);
@@ -784,11 +730,8 @@ public class Main extends Application {
 		p2NameBorder.setStroke(Color.BLACK);
 		p2NameBorder.setStrokeWidth(1);
 		rootGame.getChildren().add(p2NameBorder);
-		/*
-		 * Lives locations. On the screen, Lives start at the edge of the map and move
-		 * inwards. Ex: P1 Lives are positioned: L1, L2, L3 from left to right. Ex: P2
-		 * Lives are positioned: L3, L2, L1 from left to right.
-		 */
+
+		// Lives locations.
 		// P1 Life 1.
 		p1Lives1.setX(map.getX());
 		p1Lives1.setY(map.getY() + map.getHeight() + 5);
@@ -839,19 +782,14 @@ public class Main extends Application {
 		p2BulletRecharge.setStrokeWidth(1);
 		rootGame.getChildren().add(p2BulletRecharge);
 
-		// Event Handler for when a key is pressed
+		// Key Pressed event handler.
 		sceneGame.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 			// Move Up (P1) Event Handler
-			/*
-			 * When a key is pressed, the code turns the boolean for each corresponding
-			 * player and a direction to true. This allows the player to press the button
-			 * and move a little and hold the button to slide.
-			 */
+			// Each event handler turns a movement boolean to true. That boolean is set to
+			// false when the key is released.
 			if (event.getCode() == KeyCode.W) {
-				/*
-				 * This check is so that players can only move if the game is still playable, ie
-				 * both players have all their lives and the game isn't paused.
-				 */
+				// Only allows players to move if both characters are alive and the game is not
+				// paused.
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p1MoveUp = true;
 				}
@@ -875,18 +813,9 @@ public class Main extends Application {
 				}
 			}
 			// Player 1 Bullet Event Handler
-			/*
-			 * This event handler calls a method that creates and moves the bullet from the
-			 * corresponding player to the other side of the map. The gameLoop handles all
-			 * the collision detection and reaching it's end position. The try catch
-			 * statement handles the issue if the player spams the shoot button or presses
-			 * the button before the recharge phase is over. The error is that if a player
-			 * tries to shoot the bullet while it is still on screen, the code cannot place
-			 * the bullet on screen if it is already on screen. The reason this requires a
-			 * try catch and not the begin button on the Player Name Scene is because
-			 * everything is cleared each time the button is pressed.
-			 */
 			if (event.getCode() == KeyCode.D) {
+				// Try catch is so that when the player hits the button before the recharge is
+				// complete, an error that says "duplicate children" does not occur.
 				try {
 					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 						p1Bullet();
@@ -899,7 +828,7 @@ public class Main extends Application {
 				}
 
 			}
-			// Player 2 Bullet Event Handler. Same logic as the P1 Bullet.
+			// Player 2 Bullet Event Handler.
 			if (event.getCode() == KeyCode.LEFT) {
 				try {
 					if ((p1Lives != 0 && p2Lives != 0) && !pause) {
@@ -914,15 +843,11 @@ public class Main extends Application {
 			}
 
 			// Pause Button.
-			/*
-			 * This code pauses stops the gameLoop and sets the pause to true. Then the
-			 * animations, ie. the TranslateTransitions, are paused. Afterwards the pause
-			 * menu is displayed.
-			 */
 			if (event.getCode() == KeyCode.P) {
 				if (pause == false) {
 					pause = true;
 					gameLoop.stop();
+					// Freezes all moving objects in place.
 					p1BulletTransition.pause();
 					p2BulletTransition.pause();
 					p1RechargeTransition.pause();
@@ -943,10 +868,8 @@ public class Main extends Application {
 					pauseExit.setLayoutY(325 - pauseExit.getPrefWidth() / 2);
 					rootGame.getChildren().add(pauseExit);
 					timer.pause();
-					/*
-					 * This code turns pause to false and restarts the gameLoop. Afterwards, the
-					 * animations continue where they left off. Then the pause menu is removed.
-					 */
+					// This code turns pause to false and restarts the gameLoop. Afterwards, the
+					// animations continue where they left off. Then the pause menu is removed.
 				} else if (pause == true) {
 					pause = false;
 					gameLoop.start();
@@ -962,11 +885,7 @@ public class Main extends Application {
 				}
 			}
 		});
-		/*
-		 * Pause Continue Button Event Handler. This is the exact same code as the else
-		 * if above. This is so the players can click either the button or P to unpause
-		 * the game.
-		 */
+		// Continue Button event handler, same logic as clicking P again.
 		pauseContinue.setOnAction(event -> {
 			gameLoop.start();
 			p1BulletTransition.play();
@@ -979,35 +898,33 @@ public class Main extends Application {
 			rootGame.getChildren().remove(pauseExit);
 			timer.play();
 		});
-		/*
-		 * Pause Exit Button Event Handler. This calls the gameReset() method that
-		 * resets all elements of the game and switches scenes.
-		 */
+		// Exit Button event handler.
 		pauseExit.setOnAction(event -> {
 			gameReset();
 			primaryStage.setScene(mainScene);
 		});
-		// Event Handler for when a key is released.
+		// Key Released event handler.
 		sceneGame.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-			// Move Up (P1) Event Handler. Sets the movement boolean to false.
+			// Move Up (P1) Event Handler.
+			// Sets the movement boolean to false.
 			if (event.getCode() == KeyCode.W) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p1MoveUp = false;
 				}
 			}
-			// Move Down (P1) Event Handler
+			// Move Down (P1) Event Handler.
 			if (event.getCode() == KeyCode.S) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p1MoveDown = false;
 				}
 			}
-			// Move Up (P2) Event Handler
+			// Move Up (P2) Event Handler.
 			if (event.getCode() == KeyCode.UP) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p2MoveUp = false;
 				}
 			}
-			// Move Down (P2) Event Handler
+			// Move Down (P2) Event Handler.
 			if (event.getCode() == KeyCode.DOWN) {
 				if ((p1Lives != 0 && p2Lives != 0) && !pause) {
 					p2MoveDown = false;
@@ -1015,36 +932,36 @@ public class Main extends Application {
 			}
 		});
 
-		// Animation Timer/Game Loop
+		// Animation Timer/Game Loop.
 		gameLoop = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-				// P1 Collision Detection
+				// P1 Collision Detection.
 				if (p1.getBoundsInParent().intersects(p2Bullet.getBoundsInParent())) {
 					rootGame.getChildren().remove(p2Bullet);
 					// This method sets the X, Y, TranslateX, and TranslateY to 0.
 					p2BulletReset();
 					p1Lives--;
 				}
-				// P2 Collision Detection
+				// P2 Collision Detection.
 				if (p2.getBoundsInParent().intersects(p1Bullet.getBoundsInParent())) {
 					rootGame.getChildren().remove(p1Bullet);
 					p1BulletReset();
 					p2Lives--;
 				}
 
-				// P1 Bullet Disappear Check
+				// P1 Bullet Disappear Check.
 				if (p1Bullet.getTranslateX() == p1DesiredX) {
 					rootGame.getChildren().remove(p1Bullet);
 					p1BulletReset();
 				}
-				// P2 Bullet Disappear Check
+				// P2 Bullet Disappear Check.
 				if (p2Bullet.getTranslateX() == p2DesiredX) {
 					rootGame.getChildren().remove(p2Bullet);
 					p2BulletReset();
 				}
 
-				// Bullet Collision (With Each Other)
+				// Bullet Collision (With Each Other).
 				if (p1Bullet.getBoundsInParent().intersects(p2Bullet.getBoundsInParent())
 						&& p1Bullet.getTranslateX() != 0.0) {
 					rootGame.getChildren().remove(p1Bullet);
@@ -1053,7 +970,7 @@ public class Main extends Application {
 					p2BulletReset();
 				}
 
-				// P1 Lives Check
+				// P1 Lives Check.
 				if (p1Lives == 2) {
 					rootGame.getChildren().remove(p1Lives3);
 				} else if (p1Lives == 1) {
@@ -1061,7 +978,7 @@ public class Main extends Application {
 				} else if (p1Lives == 0) {
 					rootGame.getChildren().remove(p1Lives1);
 				}
-				// P2 Lives Check
+				// P2 Lives Check.
 				if (p2Lives == 2) {
 					rootGame.getChildren().remove(p2Lives3);
 				} else if (p2Lives == 1) {
@@ -1071,14 +988,10 @@ public class Main extends Application {
 				}
 
 				// P1 Bullet Recharge Animation.
-				/*
-				 * Before reading this, please read the methods for each recharge at the bottom
-				 * of the code. Here the code sets the width of AmmoFill to the TranslateX() of
-				 * AmmoLine. Then it checks to see if the AmmoFill is the same width as it's
-				 * frame (BulletRecharge). If it has, then the recharge animation has completed
-				 * and the AmmoLine and AmmoFill are removed.
-				 */
+				// Please read the p1BulletRecharge method at the bottom first.
+				// Updates the width of the AmmoFill to the distance the AmmoLine has traveled.
 				p1AmmoFill.setWidth(p1AmmoLine.getTranslateX());
+				// If the bar is full, removes the AmmoFill and AmmoLine.
 				if (p1AmmoFill.getWidth() == p1BulletRecharge.getWidth()) {
 					rootGame.getChildren().remove(p1AmmoFill);
 					p1AmmoLine.setStartX(p1BulletRecharge.getX());
@@ -1086,16 +999,13 @@ public class Main extends Application {
 					rootGame.getChildren().remove(p1AmmoLine);
 					p1Ammo = true;
 				}
-				// P2 Bullet Recharge Animation
-				/*
-				 * For P2, since the X and Y are the top left corner of the Rectangle, the X
-				 * needs to be reset to where the line is (That being the X of the frame
-				 * (BulletRecharge) plus the width of the frame (BulletRecharge) + the
-				 * TranslateX(). Since this TranslateX() is negative, adding it will subtract
-				 * from the previous addition placing the AmmoFill where it should be.
-				 */
+				// P2 Bullet Recharge Animation.
+				// Please read the p2BulletRecharge method at the bottom first.
+				// Updates the width of the AmmoFill to the distance the AmmoLine has traveled.
 				p2AmmoFill.setWidth(Math.abs(p2AmmoLine.getTranslateX()));
+				// Updates the X of the AmmoFill to the X of the line.
 				p2AmmoFill.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth() + p2AmmoLine.getTranslateX());
+				// Removes AmmoFill and AmmoLine is the recharge bar is full.
 				if (p2AmmoFill.getWidth() == p2BulletRecharge.getWidth()) {
 					rootGame.getChildren().remove(p2AmmoFill);
 					p2AmmoLine.setStartX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
@@ -1104,11 +1014,7 @@ public class Main extends Application {
 					p2Ammo = true;
 				}
 
-				// P1 Move Up
-				/*
-				 * The 8 is how many pixels the player moves. It is an arbitrary number found
-				 * from testing what felt like a good speed.
-				 */
+				// P1 Move Up.
 				p1NewY = p1.getY() - 8;
 				// This if makes sure that the player cannot move outside the frame of the map.
 				if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
@@ -1116,21 +1022,21 @@ public class Main extends Application {
 						p1.setY(p1NewY);
 					}
 				}
-				// P1 Move Down
+				// P1 Move Down.
 				p1NewY = p1.getY() + 8;
 				if (p1NewY > map.getY() && p1NewY < map.getY() + map.getHeight() - p1.getHeight()) {
 					if (p1MoveDown) {
 						p1.setY(p1NewY);
 					}
 				}
-				// P2 Move Up
+				// P2 Move Up.
 				p2NewY = p2.getY() - 8;
 				if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
 					if (p2MoveUp) {
 						p2.setY(p2NewY);
 					}
 				}
-				// P2 Move Down
+				// P2 Move Down.
 				p2NewY = p2.getY() + 8;
 				if (p2NewY > map.getY() && p2NewY < map.getY() + map.getHeight() - p2.getHeight()) {
 					if (p2MoveDown) {
@@ -1138,26 +1044,22 @@ public class Main extends Application {
 					}
 				}
 
-				// Game Over
-				/*
-				 * This code stops the gameLoop, pauses all transitions and stops the timer.
-				 * Afterwards, it displays the game over menu on screen. The code then reads the
-				 * text file and checks if the winning time is lower that the high score and if
-				 * the high score is 0. Afterwards, if there is a new winner they are written to
-				 * the text file and added to the high score screen.
-				 */
+				// Game Over State.
 				if (p1Lives == 0 || p2Lives == 0) {
 					gameLoop.stop();
+					// Freezes all moving objects.
 					p1BulletTransition.pause();
 					p2BulletTransition.pause();
 					p1RechargeTransition.pause();
 					p2RechargeTransition.pause();
 					timer.stop();
+					// Displays the Game Over Button.
 					gameOver.setPrefWidth(400);
 					gameOver.setPrefHeight(100);
 					gameOver.setLayoutX(450 - gameOver.getPrefWidth() / 2);
 					gameOver.setLayoutY(mapCenter - gameOver.getPrefHeight() / 2);
 					rootGame.getChildren().add(gameOver);
+					// Determines the winner.
 					if (p1Lives == 0) {
 						winner = p2NameInput;
 					} else if (p2Lives == 0) {
@@ -1168,13 +1070,16 @@ public class Main extends Application {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+					// Determines if the winner has beaten the high score.
 					if (winningTime < highScoreInt || highScoreInt == 0) {
 						try {
+							// Writes the winner and their score to the text file.
 							fileWriter();
 							fileReader();
 						} catch (Exception e) {
 						}
 					}
+					// Updates the high score page.
 					rootHighScore.getChildren().clear();
 					rootHighScore.getChildren().addAll(backButtonHS, highScorePage, highScoreTitle);
 					rootHighScore.getChildren().remove(noHighScore);
@@ -1184,7 +1089,7 @@ public class Main extends Application {
 					highScoreNameLine.setFont(Font.font(14));
 					highScoreIntIntro = new Text("with a score of:");
 					highScoreIntIntro.setFont(Font.font(18));
-					highScoreIntLine = new Text("        " + highScoreIntToString + " seconds.");
+					highScoreIntLine = new Text("        " + highScoreIntString + " seconds.");
 					highScoreIntLine.setFont(Font.font(14));
 					// High Score VBox to put the text in.
 					VBox highScoreText = new VBox(20);
@@ -1204,14 +1109,11 @@ public class Main extends Application {
 	}
 
 	// P1 Bullet Method
-	/*
-	 * This method sets the X and the Y of the bullet so that it is centered around
-	 * it's player. Afterwards, it calls on the transition to move the bullet from
-	 * the player to the other side of the map. Collision detection is handled by
-	 * the gameLoop.
-	 */
+	// Creates the bullet and moves it from Player 1's Y coordinate to Player 2's Y
+	// coordinate.
 	public static void p1Bullet() {
 		if (p1Ammo) {
+			// Sets the bullet to leave from the center of the player.
 			p1Bullet.setX(p1.getX() + p1.getWidth() / 2 - p1Bullet.getWidth() / 2);
 			p1Bullet.setY(p1.getY() + p1.getHeight() / 2 - p1Bullet.getHeight() / 2);
 			rootGame.getChildren().add(p1Bullet);
@@ -1224,8 +1126,11 @@ public class Main extends Application {
 	}
 
 	// P2 Bullet Method
+	// Creates the bullet and moves it from Player 2's Y coordinate to Player 1's Y
+	// coordinate.
 	public static void p2Bullet() {
 		if (p2Ammo) {
+			// Sets the bullet to leave from the center of the player.
 			p2Bullet.setX(p2.getX() + p2.getWidth() / 2 - p2Bullet.getWidth() / 2);
 			p2Bullet.setY(p2.getY() + p2.getHeight() / 2 - p2Bullet.getHeight() / 2);
 			rootGame.getChildren().add(p2Bullet);
@@ -1254,19 +1159,9 @@ public class Main extends Application {
 	}
 
 	// P1 Bullet Recharge Bar Method
-	/*
-	 * The way our recharge bar works is that a line moves from one point to
-	 * another, and a rectangle follows it from Point A to B, extending the farther
-	 * it has moved. To do so, the code creates a line (called AmmoLine).
-	 * Afterwards, the the TranslateTransition will move it from Point A to B. From
-	 * here, the gameLoop constantly checks the TranslateX() of the line and assigns
-	 * that as the width of the rectangle that follows (AmmoFill). For P2, the code
-	 * takes the negative value of the TranslateX() since it is moving left, making
-	 * it negative naturally. Since TranslateX() is the amount of pixels the line
-	 * has moved, it works perfectly for the width of the rectangle. When the method
-	 * is recalled, since there is one AmmoFill and AmmoLine per character, the X()
-	 * and TranslateX() need to be reset.
-	 */
+	// Initializes AmmoFill and AmmoLine. AmmoLine moves from the beginning to the
+	// end of the Recharge Bar. From here, the gameLoop updates AmmoFill to the
+	// TranslateX() of AmmoLine.
 	public static void p1BulletRecharge() {
 		p1AmmoFill.setX(p1BulletRecharge.getX());
 		p1AmmoFill.setY(p1BulletRecharge.getY());
@@ -1282,6 +1177,8 @@ public class Main extends Application {
 	}
 
 	// P2 Bullet Recharge Bar Method
+	// Same logic as P1 Bullet Recharge with the added feature that TranslateX() is
+	// negative since AmmoLine moves left.
 	public static void p2BulletRecharge() {
 		p2AmmoFill.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth() - p2AmmoFill.getWidth());
 		p2AmmoFill.setY(p2BulletRecharge.getY());
@@ -1296,20 +1193,25 @@ public class Main extends Application {
 		p2RechargeTransition.play();
 	}
 
-	// Resets Game. This resets all game elements and removes the pause menu.
+	// Resets Game.
 	public static void gameReset() {
+		// Removes the Pause Menu/Game Over menu, which ever is active.
 		rootGame.getChildren().remove(pauseText);
 		rootGame.getChildren().remove(pauseContinue);
 		rootGame.getChildren().remove(pauseExit);
 		rootGame.getChildren().remove(gameOver);
+		// "Deletes" the timer.
 		rootGame.getChildren().remove(timerArr.get(0));
 		timerArr.remove(0);
+		// Resets Player starting positions.
 		p1.setY(250);
 		p2.setY(250);
+		// Resets movement booleans.
 		p1MoveUp = false;
 		p1MoveDown = false;
 		p2MoveUp = false;
 		p2MoveDown = false;
+		// Resets all animations (Bullets and Recharge Bars).
 		p1BulletTransition.stop();
 		rootGame.getChildren().remove(p1Bullet);
 		p1BulletReset();
@@ -1324,6 +1226,7 @@ public class Main extends Application {
 		p2AmmoFill.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
 		p1Ammo = true;
 		p2Ammo = true;
+		// Resets lives
 		if (p1Lives == 0) {
 			rootGame.getChildren().add(p1Lives1);
 			rootGame.getChildren().add(p1Lives2);
