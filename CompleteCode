@@ -2,7 +2,7 @@
  * Made by Marcus Uy and Ryan Seto.
  * Game Name: HIYA!
  * Work Cited:
- * - Button shortcut event handler [.setOnAction(e -> {});]
+ * - Button Dimming and Button shortcut event handler [.setOnAction(e -> {});]
  *   - http://tutorials.jenkov.com/javafx/button.html
  * - Rectangles, Labels, VBox, TextFields, and Text all used this API
  *   - https://docs.oracle.com/javase/8/javafx/api/toc.htm
@@ -19,8 +19,6 @@
  *   - https://docs.oracle.com/javase/8/javafx/api/javafx/scene/paint/class-use/Color.html
  * - Try Catch Statements
  *   - https://www.dummies.com/programming/java/try-statements-in-java/
- * - Button Dimming
- *   - 
  * - Setting Fonts
  *   - https://docs.oracle.com/javafx/2/text/jfxpub-text.htm
  */
@@ -156,7 +154,6 @@ public class Main extends Application {
 	public static Timeline timer;
 	public static ArrayList<clock> timerArr = new ArrayList<clock>();
 	public static int winningTime;
-
 	// This timer starts and ends with the game. This is used to track who can win
 	// the fastest for the high score.
 	public class clock extends Pane {
@@ -164,21 +161,19 @@ public class Main extends Application {
 			time.setFont(Font.font(50));
 			time.setLayoutX(393);
 			time.setLayoutY(15);
-			rootGame.getChildren().add(time);
+			getChildren().add(time);
 			timer = new Timeline(new KeyFrame(Duration.seconds(1), e -> timeLabel()));
 			// Since the game ends when one player is out of lives, not when a timer runs
 			// out, the timer runs forever.
 			timer.setCycleCount(Timeline.INDEFINITE);
 			timer.play();
 		}
-
 		int secondsPass = 0;
 		String labelString = " ";
 		String tempSecs = "";
 		String tempMins = "";
 		int mins = 0;
 		Label time = new Label("00:00");
-
 		private void timeLabel() {
 			if (secondsPass >= 0) {
 				secondsPass++;
@@ -202,8 +197,7 @@ public class Main extends Application {
 					tempMins = mins + "";
 				}
 				time.setText(labelString);
-				// Since secondsPass is a local variable, we created winningTime so that we
-				// could access the time outside of the method since it is private.
+				// Pulls the time out of the timer for high score comparison. 
 				winningTime = secondsPass;
 			}
 		}
@@ -223,7 +217,7 @@ public class Main extends Application {
 	// This String will store the name of the high scorer.
 	public static String highScoreName = "";
 
-	// This will contain the text messages of of the high score page.
+	// These will contain the text messages of of the high score page.
 	public static Text highScoreNameIntro;
 	public static Text highScoreNameLine;
 	public static Text highScoreIntIntro;
@@ -380,21 +374,20 @@ public class Main extends Application {
 			try {
 				fileReader();
 			} catch (Exception e) {
+				System.out.println("File not found.");
 			}
 			// Resets the scene. If the Begin Button is spammed, too many error messages for
 			// the player are displayed on the scene. This fixes that error.
 			rootPlayerName.getChildren().clear();
 			rootPlayerName.getChildren().addAll(backButtonPN, p1Model, p1TF, p2Model, p2TF, p1Label, p2Label,
 					startGameButton, playerNameTitle);
-			// Scenario 1: P1 or P2 have no name. This checks if the String is "" or " ".
+			// Scenario 1: P1 or P2 have no name. 
 			if (p1TF.getCharacters().toString().equals(" ") || p1TF.getCharacters().toString().equals("")
 					|| p2TF.getCharacters().toString().equals(" ") || p2TF.getCharacters().toString().equals("")) {
 				emptyName = new Label("Please enter a name.");
 				emptyName.setLayoutX(397);
 				emptyName.setLayoutY(435);
 				rootPlayerName.getChildren().add(emptyName);
-				rootPlayerName.getChildren().remove(sameName);
-
 			}
 			// Scenario 2: P1 and P2 have the same name.
 			else if (p1TF.getCharacters().toString().equals(p2TF.getCharacters().toString())) {
@@ -402,104 +395,45 @@ public class Main extends Application {
 				sameName.setLayoutX(367);
 				sameName.setLayoutY(435);
 				rootPlayerName.getChildren().add(sameName);
-				rootPlayerName.getChildren().remove(emptyName);
 			}
 			// Scenario 3: P1 has the same name as the high score. Players can then say yes
 			// or no.
 			else if (p1TF.getCharacters().toString().equals(highScoreName)) {
 				samePerson = new Label("P1, are you the same person as the high scorer?");
-				samePerson.setLayoutX(325);
-				samePerson.setLayoutY(435);
-				rootPlayerName.getChildren().add(samePerson);
-				yesSamePerson = new Button("Yes?");
-				yesSamePerson.setPrefWidth(50);
-				yesSamePerson.setPrefHeight(10);
-				yesSamePerson.setLayoutX(400 - yesSamePerson.getPrefWidth() / 2);
-				yesSamePerson.setLayoutY(500 - yesSamePerson.getPrefWidth() / 2);
-				rootPlayerName.getChildren().add(yesSamePerson);
-				noSamePerson = new Button("No?");
-				noSamePerson.setPrefWidth(50);
-				noSamePerson.setPrefHeight(10);
-				noSamePerson.setLayoutX(500 - noSamePerson.getPrefWidth() / 2);
-				noSamePerson.setLayoutY(500 - noSamePerson.getPrefWidth() / 2);
-				rootPlayerName.getChildren().add(noSamePerson);
-				rootPlayerName.getChildren().remove(emptyName);
-				rootPlayerName.getChildren().remove(sameName);
-				rootPlayerName.getChildren().remove(changeName);
+				// This method is located at the bottom of the code.
+				samePersonMethod();
 				// The Yes Button event handler. Exact same as Scenario 5.
 				yesSamePerson.setOnAction(e -> {
 					primaryStage.setScene(sceneGame);
-					gameLoop.start();
 					timerArr.add(new clock());
 					rootGame.getChildren().add(timerArr.get(0));
-					p1NameInput = p1TF.getCharacters().toString();
-					p1Name.setText(p1NameInput);
-					p2NameInput = p2TF.getCharacters().toString();
-					p2Name.setText(p2NameInput);
-					rootPlayerName.getChildren().remove(emptyName);
-					rootPlayerName.getChildren().remove(sameName);
-					rootPlayerName.getChildren().remove(samePerson);
-					rootPlayerName.getChildren().remove(changeName);
-
+					// This method is located at the bottom of the code.
+					beginGame();
 				});
 				// The No Button event handler.
 				noSamePerson.setOnAction(e -> {
-					rootPlayerName.getChildren().remove(samePerson);
-					rootPlayerName.getChildren().remove(yesSamePerson);
-					rootPlayerName.getChildren().remove(noSamePerson);
-					changeName = new Label("Please change your name.");
-					changeName.setLayoutX(380);
-					changeName.setLayoutY(435);
-					rootPlayerName.getChildren().add(changeName);
+					// This method is located at the bottom of the code.
+					noButton();
 				});
 
 			}
 			// Scenario 4: P2 has the same name as the high score.
 			else if (p2TF.getCharacters().toString().equals(highScoreName)) {
 				samePerson = new Label("P2, are you the same person as the high scorer?");
-				samePerson.setLayoutX(325);
-				samePerson.setLayoutY(435);
-				rootPlayerName.getChildren().add(samePerson);
-				yesSamePerson = new Button("Yes?");
-				yesSamePerson.setPrefWidth(50);
-				yesSamePerson.setPrefHeight(10);
-				yesSamePerson.setLayoutX(400 - yesSamePerson.getPrefWidth() / 2);
-				yesSamePerson.setLayoutY(500 - yesSamePerson.getPrefWidth() / 2);
-				rootPlayerName.getChildren().add(yesSamePerson);
-				noSamePerson = new Button("No?");
-				noSamePerson.setPrefWidth(50);
-				noSamePerson.setPrefHeight(10);
-				noSamePerson.setLayoutX(500 - noSamePerson.getPrefWidth() / 2);
-				noSamePerson.setLayoutY(500 - noSamePerson.getPrefWidth() / 2);
-				rootPlayerName.getChildren().add(noSamePerson);
-				rootPlayerName.getChildren().remove(emptyName);
-				rootPlayerName.getChildren().remove(sameName);
-				rootPlayerName.getChildren().remove(changeName);
+				// This method is located at the bottom of the code.
+				samePersonMethod();
 				// The Yes Button event handler. Exacts same as Scenario 5.
 				yesSamePerson.setOnAction(e -> {
 					primaryStage.setScene(sceneGame);
-					gameLoop.start();
 					timerArr.add(new clock());
 					rootGame.getChildren().add(timerArr.get(0));
-					p1NameInput = p1TF.getCharacters().toString();
-					p1Name.setText(p1NameInput);
-					p2NameInput = p2TF.getCharacters().toString();
-					p2Name.setText(p2NameInput);
-					rootPlayerName.getChildren().remove(emptyName);
-					rootPlayerName.getChildren().remove(sameName);
-					rootPlayerName.getChildren().remove(samePerson);
-					rootPlayerName.getChildren().remove(changeName);
-
+					// This method is located at the bottom of the code.
+					beginGame();
 				});
 				// The No Button event handler.
 				noSamePerson.setOnAction(e -> {
-					rootPlayerName.getChildren().remove(samePerson);
-					changeName = new Label("Please change your name.");
-					changeName.setLayoutX(380);
-					changeName.setLayoutY(435);
-					rootPlayerName.getChildren().add(changeName);
-					rootPlayerName.getChildren().remove(yesSamePerson);
-					rootPlayerName.getChildren().remove(noSamePerson);
+					// This method is located at the bottom of the code. 
+					noButton();
 				});
 
 			}
@@ -507,17 +441,11 @@ public class Main extends Application {
 			// begin.
 			else {
 				primaryStage.setScene(sceneGame);
-				gameLoop.start();
+				// Creates/Starts the timer.
 				timerArr.add(new clock());
 				rootGame.getChildren().add(timerArr.get(0));
-				p1NameInput = p1TF.getCharacters().toString();
-				p1Name.setText(p1NameInput);
-				p2NameInput = p2TF.getCharacters().toString();
-				p2Name.setText(p2NameInput);
-				rootPlayerName.getChildren().remove(emptyName);
-				rootPlayerName.getChildren().remove(sameName);
-				rootPlayerName.getChildren().remove(samePerson);
-				rootPlayerName.getChildren().remove(changeName);
+				// This method is located at the bottom of the code. 
+				beginGame();
 			}
 		});
 
@@ -533,8 +461,12 @@ public class Main extends Application {
 		highscoresButton.setLayoutY(400 - highscoresButton.getPrefWidth() / 2);
 		// Dims the button when hovering over it.
 		highscoresButton.setStyle("-fx-background-color: #EE4540");
-		highscoresButton.setOnMouseEntered(event -> highscoresButton.setStyle("-fx-background-color: #D93F3B"));
-		highscoresButton.setOnMouseExited(event -> highscoresButton.setStyle("-fx-background-color: #EE4540"));
+		highscoresButton.setOnMouseEntered(event -> {
+			highscoresButton.setStyle("-fx-background-color: #D93F3B");
+		});
+		highscoresButton.setOnMouseExited(event -> {
+			highscoresButton.setStyle("-fx-background-color: #EE4540");
+		});
 		// This event handler switches from the Title Scene to the High Score Scene
 		highscoresButton.setOnAction(event -> primaryStage.setScene(sceneHighScore));
 		// High Score Page (Serves as a border for the High Score)
@@ -553,6 +485,7 @@ public class Main extends Application {
 		try {
 			fileReader();
 		} catch (Exception e) {
+			System.out.println("File not found.");
 		}
 		// Checks if there is a high score. The code displays messages accordingly.
 		if (highScoreName.equals("") && highScoreIntString.equals("")) {
@@ -590,8 +523,12 @@ public class Main extends Application {
 		backButtonHS.setOnAction(event -> primaryStage.setScene(mainScene));
 		// Dims the button when hovering over it.
 		backButtonHS.setStyle("-fx-background-color: #3CAEA3");
-		backButtonHS.setOnMouseEntered(event -> backButtonHS.setStyle("-fx-background-color: #379F95"));
-		backButtonHS.setOnMouseExited(event -> backButtonHS.setStyle("-fx-background-color: #3CAEA3"));
+		backButtonHS.setOnMouseEntered(event -> {
+			backButtonHS.setStyle("-fx-background-color: #379F95");
+		});
+		backButtonHS.setOnMouseExited(event -> {
+			backButtonHS.setStyle("-fx-background-color: #3CAEA3");
+		});
 
 		// Instructions Scene and Pane
 		rootI = new Pane();
@@ -607,8 +544,12 @@ public class Main extends Application {
 		insLabel.setLayoutX(290);
 		insLabel.setLayoutY(290);
 		instructionsButton.setStyle("-fx-background-color: #3CAEA3");
-		instructionsButton.setOnMouseEntered(event -> instructionsButton.setStyle("-fx-background-color: #379F95"));
-		instructionsButton.setOnMouseExited(event -> instructionsButton.setStyle("-fx-background-color: #3CAEA3"));
+		instructionsButton.setOnMouseEntered(event -> {
+			instructionsButton.setStyle("-fx-background-color: #379F95");
+		});
+		instructionsButton.setOnMouseExited(event -> {
+			instructionsButton.setStyle("-fx-background-color: #3CAEA3");
+		});
 		// Instructions Button Event Handler
 		instructionsButton.setOnAction(event -> primaryStage.setScene(sceneI));
 		// Instructions Page (Serves as a border for the Instructions)
@@ -632,10 +573,12 @@ public class Main extends Application {
 		rootI.getChildren().add(gameInstructions);
 		// Game Instructions Text
 		VBox gameTextInstructions = new VBox(20);
-		Text gameTextInstructionsLine1 = new Text("The goal of the game is to eliminate the other player.");
-		Text gameTextInstructionsLine2 = new Text(
-				"Each player has 3 lives and can shoot a bullet every 2 " + "seconds.");
-		Text gameTextInstructionsLine3 = new Text("High scores are determined by who can win the fastest.");
+		Text gameTextInstructionsLine1 = new Text();
+		gameTextInstructionsLine1.setText("The goal of the game is to eliminate the other player.");
+		Text gameTextInstructionsLine2 = new Text();
+		gameTextInstructionsLine2.setText("Each player has 3 lives and can shoot a bullet every 2 " + "seconds.");
+		Text gameTextInstructionsLine3 = new Text();
+		gameTextInstructionsLine3.setText("High scores are determined by who can win the fastest.");
 		gameTextInstructions.setLayoutX(310);
 		gameTextInstructions.setLayoutY(120);
 		gameTextInstructions.getChildren().addAll(gameTextInstructionsLine1, gameTextInstructionsLine2,
@@ -652,7 +595,8 @@ public class Main extends Application {
 		Text p1TextInstructionsLine1 = new Text("Press W to move up.");
 		Text p1TextInstructionsLine2 = new Text("Press S to move down.");
 		Text p1TextInstructions3 = new Text("Press D to shoot.");
-		p1TextInstructions.getChildren().addAll(p1TextInstructionsLine1, p1TextInstructionsLine2, p1TextInstructions3);
+		p1TextInstructions.getChildren().addAll(p1TextInstructionsLine1, p1TextInstructionsLine2, 
+				p1TextInstructions3);
 		p1TextInstructions.setLayoutX(310);
 		p1TextInstructions.setLayoutY(225);
 		rootI.getChildren().add(p1TextInstructions);
@@ -683,7 +627,7 @@ public class Main extends Application {
 		Text pauseInstructionsLine1 = new Text("Press P to pause.");
 		Text pauseInstructionsLine2 = new Text("There is no 3 second break after resuming the game.");
 		// There is no 3 second pause since most games that require focus and reflexes,
-		// ie Geometry Dash and Smash Bros. do not grant a buffer time to discourage
+		// ie Geometry Dash and Smash Bros., do not grant a buffer time to discourage
 		// pausing.
 		otherTextInstructions.getChildren().addAll(pauseInstructionsLine1, pauseInstructionsLine2);
 		otherTextInstructions.setLayoutX(310);
@@ -699,8 +643,12 @@ public class Main extends Application {
 		backButtonI.setOnAction(event -> primaryStage.setScene(mainScene));
 		// Dims the button when hovering over it.
 		backButtonI.setStyle("-fx-background-color: #3CAEA3");
-		backButtonI.setOnMouseEntered(event -> backButtonI.setStyle("-fx-background-color: #379F95"));
-		backButtonI.setOnMouseExited(event -> backButtonI.setStyle("-fx-background-color: #3CAEA3"));
+		backButtonI.setOnMouseEntered(event -> {
+			backButtonI.setStyle("-fx-background-color: #379F95");
+		});
+		backButtonI.setOnMouseExited(event -> {
+			backButtonI.setStyle("-fx-background-color: #3CAEA3");
+		});
 
 		// Game Scene and Root.
 		rootGame = new Pane();
@@ -852,6 +800,7 @@ public class Main extends Application {
 						}
 					}
 				} catch (IllegalArgumentException e) {
+					System.out.println("P1 is recharging.");
 				}
 
 			}
@@ -866,6 +815,7 @@ public class Main extends Application {
 						}
 					}
 				} catch (IllegalArgumentException e) {
+					System.out.println("P2 is recharging.");
 				}
 			}
 
@@ -895,35 +845,16 @@ public class Main extends Application {
 					pauseExit.setLayoutY(325 - pauseExit.getPrefWidth() / 2);
 					rootGame.getChildren().add(pauseExit);
 					timer.pause();
-					// This code turns pause to false and restarts the gameLoop. Afterwards, the
-					// animations continue where they left off. Then the pause menu is removed.
 				} else if (pause == true) {
-					pause = false;
-					gameLoop.start();
-					p1BulletTransition.play();
-					p2BulletTransition.play();
-					p1RechargeTransition.play();
-					p2RechargeTransition.play();
-					// Removes pause menu.
-					rootGame.getChildren().remove(pauseText);
-					rootGame.getChildren().remove(pauseContinue);
-					rootGame.getChildren().remove(pauseExit);
-					timer.play();
+					// Please see the method at the bottom of the code. 
+					continueGame();
 				}
 			}
 		});
 		// Continue Button event handler, same logic as clicking P again.
 		pauseContinue.setOnAction(event -> {
-			gameLoop.start();
-			p1BulletTransition.play();
-			p2BulletTransition.play();
-			p1RechargeTransition.play();
-			p2RechargeTransition.play();
-			pause = false;
-			rootGame.getChildren().remove(pauseText);
-			rootGame.getChildren().remove(pauseContinue);
-			rootGame.getChildren().remove(pauseExit);
-			timer.play();
+			// Please see the method at the bottom of the code. 
+			continueGame();
 		});
 		// Exit Button event handler.
 		pauseExit.setOnAction(event -> {
@@ -1031,7 +962,8 @@ public class Main extends Application {
 				// Updates the width of the AmmoFill to the distance the AmmoLine has traveled.
 				p2AmmoFill.setWidth(Math.abs(p2AmmoLine.getTranslateX()));
 				// Updates the X of the AmmoFill to the X of the line.
-				p2AmmoFill.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth() + p2AmmoLine.getTranslateX());
+				p2AmmoFill.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth() 
+						+ p2AmmoLine.getTranslateX());
 				// Removes AmmoFill and AmmoLine is the recharge bar is full.
 				if (p2AmmoFill.getWidth() == p2BulletRecharge.getWidth()) {
 					rootGame.getChildren().remove(p2AmmoFill);
@@ -1095,15 +1027,17 @@ public class Main extends Application {
 					try {
 						fileReader();
 					} catch (Exception e) {
-						e.printStackTrace();
+						System.out.println("File not found.");
 					}
 					// Determines if the winner has beaten the high score.
 					if (winningTime < highScoreInt || highScoreInt == 0) {
 						try {
 							// Writes the winner and their score to the text file.
 							fileWriter();
+							// Reads the file to get the new high score. 
 							fileReader();
 						} catch (Exception e) {
+							System.out.println("File not found.");
 						}
 					}
 					// Updates the high score page.
@@ -1120,12 +1054,12 @@ public class Main extends Application {
 					highScoreIntLine.setFont(Font.font(14));
 					// High Score VBox to put the text in.
 					VBox highScoreText = new VBox(20);
-					highScoreText.getChildren().addAll(highScoreNameIntro, highScoreNameLine, highScoreIntIntro,
-							highScoreIntLine);
+					highScoreText.getChildren().addAll(highScoreNameIntro, highScoreNameLine, 
+							highScoreIntIntro, highScoreIntLine);
 					highScoreText.setLayoutX(265);
 					highScoreText.setLayoutY(120);
 					rootHighScore.getChildren().add(highScoreText);
-					// This event handler closes the game and returns to the main screen.
+					// This event handler closes/resets the game and returns to the main screen.
 					gameOver.setOnAction(event -> {
 						gameReset();
 						primaryStage.setScene(mainScene);
@@ -1135,6 +1069,76 @@ public class Main extends Application {
 		};
 	}
 
+	// Same Name as High Scorer Method
+	// Displays a "menu" that asks the player if they are the same 
+	// person as the high scorer. Players can say "Yes" or "No".
+	public static void samePersonMethod() {
+		samePerson.setLayoutX(325);
+		samePerson.setLayoutY(435);
+		rootPlayerName.getChildren().add(samePerson);
+		yesSamePerson = new Button("Yes?");
+		yesSamePerson.setPrefWidth(50);
+		yesSamePerson.setPrefHeight(10);
+		yesSamePerson.setLayoutX(400 - yesSamePerson.getPrefWidth() / 2);
+		yesSamePerson.setLayoutY(500 - yesSamePerson.getPrefWidth() / 2);
+		rootPlayerName.getChildren().add(yesSamePerson);
+		noSamePerson = new Button("No?");
+		noSamePerson.setPrefWidth(50);
+		noSamePerson.setPrefHeight(10);
+		noSamePerson.setLayoutX(500 - noSamePerson.getPrefWidth() / 2);
+		noSamePerson.setLayoutY(500 - noSamePerson.getPrefWidth() / 2);
+		rootPlayerName.getChildren().add(noSamePerson);
+		rootPlayerName.getChildren().remove(emptyName);
+		rootPlayerName.getChildren().remove(sameName);
+		rootPlayerName.getChildren().remove(changeName);
+	}
+
+	// Same Name As High Scorer No Button Method
+	// Removes the Yes Button, No Button, and the Error Message
+	// for the player, displays new message. 
+	public static void noButton() {
+		rootPlayerName.getChildren().remove(samePerson);
+		rootPlayerName.getChildren().remove(yesSamePerson);
+		rootPlayerName.getChildren().remove(noSamePerson);
+		changeName = new Label("Please change your name.");
+		changeName.setLayoutX(380);
+		changeName.setLayoutY(435);
+		rootPlayerName.getChildren().add(changeName);
+	}
+	
+	// Begin Game Method
+	// Starts the game loop, clears any Player Name Errors Messages, 
+	// sets Player Names. 
+	public static void beginGame() {
+		gameLoop.start();
+		p1NameInput = p1TF.getCharacters().toString();
+		p1Name.setText(p1NameInput);
+		p2NameInput = p2TF.getCharacters().toString();
+		p2Name.setText(p2NameInput);
+		rootPlayerName.getChildren().remove(emptyName);
+		rootPlayerName.getChildren().remove(sameName);
+		rootPlayerName.getChildren().remove(samePerson);
+		rootPlayerName.getChildren().remove(changeName);
+		rootPlayerName.getChildren().remove(yesSamePerson);
+		rootPlayerName.getChildren().remove(noSamePerson);
+	}
+
+	// Continue Game Method (From Pause)
+	// This code turns pause to false and restarts the gameLoop. Afterwards, the
+	// animations continue where they left off. Then the pause menu is removed.
+	public static void continueGame() {
+		pause = false;
+		gameLoop.start();
+		p1BulletTransition.play();
+		p2BulletTransition.play();
+		p1RechargeTransition.play();
+		p2RechargeTransition.play();
+		// Removes pause menu.
+		rootGame.getChildren().remove(pauseText);
+		rootGame.getChildren().remove(pauseContinue);
+		rootGame.getChildren().remove(pauseExit);
+		timer.play();
+	}
 	// P1 Bullet Method
 	// Creates the bullet and moves it from Player 1's Y coordinate to Player 2's Y
 	// coordinate.
@@ -1205,7 +1209,7 @@ public class Main extends Application {
 
 	// P2 Bullet Recharge Bar Method
 	// Same logic as P1 Bullet Recharge with the added feature that TranslateX() is
-	// negative since AmmoLine moves left.
+	// negative since the AmmoLine moves left.
 	public static void p2BulletRecharge() {
 		p2AmmoFill.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth() - p2AmmoFill.getWidth());
 		p2AmmoFill.setY(p2BulletRecharge.getY());
@@ -1253,7 +1257,7 @@ public class Main extends Application {
 		p2AmmoFill.setX(p2BulletRecharge.getX() + p2BulletRecharge.getWidth());
 		p1Ammo = true;
 		p2Ammo = true;
-		// Resets lives
+		// Resets lives.
 		if (p1Lives == 0) {
 			rootGame.getChildren().add(p1Lives1);
 			rootGame.getChildren().add(p1Lives2);
